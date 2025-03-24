@@ -1,7 +1,101 @@
+import { Anime, PremiumPlan, User, PaymentStatus } from "../types";
 
-import { Anime } from "../types";
+// Local storage keys
+const ANIME_DATA_KEY = "animestream_anime_data";
+const USERS_KEY = "animestream_users";
+const PREMIUM_PLANS_KEY = "animestream_premium_plans";
+const PAYMENTS_KEY = "animestream_payments";
 
-export const animeData: Anime[] = [
+// Initialize data from localStorage or use default data
+const getInitialAnimeData = (): Anime[] => {
+  const storedData = localStorage.getItem(ANIME_DATA_KEY);
+  if (storedData) {
+    return JSON.parse(storedData);
+  }
+  return defaultAnimeData;
+};
+
+// Default premium plans
+export const premiumPlans: PremiumPlan[] = [
+  {
+    id: "basic",
+    name: "Basic",
+    price: 499,
+    duration: 1,
+    features: [
+      "Ad-free streaming",
+      "Access to all anime",
+      "HD quality"
+    ]
+  },
+  {
+    id: "standard",
+    name: "Standard",
+    price: 899,
+    duration: 3,
+    features: [
+      "All Basic features",
+      "Download episodes",
+      "Full HD quality",
+      "Stream on 2 devices"
+    ],
+    popular: true
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    price: 1299,
+    duration: 6,
+    features: [
+      "All Standard features",
+      "4K Ultra HD quality",
+      "Stream on 4 devices",
+      "Early access to new episodes"
+    ]
+  }
+];
+
+// Mock users
+const mockUsers: User[] = [
+  {
+    id: "1",
+    username: "anime_lover",
+    email: "anime@example.com",
+    premium: false,
+    role: "user"
+  },
+  {
+    id: "dev777",
+    username: "developer777",
+    email: "dev@animestream.com",
+    premium: true,
+    role: "developer"
+  }
+];
+
+// Get initial users from localStorage or use default
+const getInitialUsers = (): User[] => {
+  const storedUsers = localStorage.getItem(USERS_KEY);
+  if (storedUsers) {
+    return JSON.parse(storedUsers);
+  }
+  
+  // Store default users and return them
+  localStorage.setItem(USERS_KEY, JSON.stringify(mockUsers));
+  return mockUsers;
+};
+
+// Initialize payment statuses
+const getInitialPayments = (): PaymentStatus[] => {
+  const storedPayments = localStorage.getItem(PAYMENTS_KEY);
+  if (storedPayments) {
+    return JSON.parse(storedPayments);
+  }
+  return [];
+};
+
+// Default anime data
+const defaultAnimeData: Anime[] = [
   {
     id: "1",
     title: "Demon Slayer",
@@ -205,10 +299,155 @@ export const animeData: Anime[] = [
   }
 ];
 
+// Load data from localStorage or use defaults
+export let animeData: Anime[] = getInitialAnimeData();
+export let users: User[] = getInitialUsers();
+export let payments: PaymentStatus[] = getInitialPayments();
+
+// Initialize premium plans in localStorage
+const initializePremiumPlans = () => {
+  const storedPlans = localStorage.getItem(PREMIUM_PLANS_KEY);
+  if (!storedPlans) {
+    localStorage.setItem(PREMIUM_PLANS_KEY, JSON.stringify(premiumPlans));
+  }
+};
+initializePremiumPlans();
+
+// Save data to localStorage
+const saveAnimeData = () => {
+  localStorage.setItem(ANIME_DATA_KEY, JSON.stringify(animeData));
+};
+
+const saveUsers = () => {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+};
+
+const savePayments = () => {
+  localStorage.setItem(PAYMENTS_KEY, JSON.stringify(payments));
+};
+
+// CRUD operations for anime
 export const getAnimeById = (id: string): Anime | undefined => {
   return animeData.find(anime => anime.id === id);
 };
 
+export const addAnime = (anime: Anime): Anime => {
+  // Generate an ID if not provided
+  if (!anime.id) {
+    anime.id = Date.now().toString();
+  }
+  animeData = [...animeData, anime];
+  saveAnimeData();
+  return anime;
+};
+
+export const updateAnime = (updatedAnime: Anime): Anime | null => {
+  const index = animeData.findIndex(anime => anime.id === updatedAnime.id);
+  if (index === -1) return null;
+  
+  animeData[index] = updatedAnime;
+  saveAnimeData();
+  return updatedAnime;
+};
+
+export const deleteAnime = (id: string): boolean => {
+  const initialLength = animeData.length;
+  animeData = animeData.filter(anime => anime.id !== id);
+  
+  if (animeData.length !== initialLength) {
+    saveAnimeData();
+    return true;
+  }
+  return false;
+};
+
+// User operations
+export const getUserById = (id: string): User | undefined => {
+  return users.find(user => user.id === id);
+};
+
+export const getUserByEmail = (email: string): User | undefined => {
+  return users.find(user => user.email === email);
+};
+
+export const updateUser = (updatedUser: User): User | null => {
+  const index = users.findIndex(user => user.id === updatedUser.id);
+  if (index === -1) return null;
+  
+  users[index] = updatedUser;
+  saveUsers();
+  return updatedUser;
+};
+
+// Premium plan operations
+export const getPremiumPlans = (): PremiumPlan[] => {
+  const storedPlans = localStorage.getItem(PREMIUM_PLANS_KEY);
+  if (storedPlans) {
+    return JSON.parse(storedPlans);
+  }
+  return premiumPlans;
+};
+
+export const getPlanById = (id: string): PremiumPlan | undefined => {
+  const plans = getPremiumPlans();
+  return plans.find(plan => plan.id === id);
+};
+
+// Payment operations
+export const createPayment = (userId: string, planId: string, amount: number): PaymentStatus => {
+  const payment: PaymentStatus = {
+    id: `payment_${Date.now()}`,
+    userId,
+    planId,
+    status: "pending",
+    amount,
+    paymentDate: new Date().toISOString(),
+    paymentMethod: "PhonePe"
+  };
+  
+  payments = [...payments, payment];
+  savePayments();
+  return payment;
+};
+
+export const updatePaymentStatus = (paymentId: string, status: "pending" | "completed" | "failed"): PaymentStatus | null => {
+  const index = payments.findIndex(payment => payment.id === paymentId);
+  if (index === -1) return null;
+  
+  payments[index] = { ...payments[index], status };
+  savePayments();
+  
+  // If payment is completed, update user subscription
+  if (status === "completed") {
+    const payment = payments[index];
+    const user = getUserById(payment.userId);
+    const plan = getPlanById(payment.planId);
+    
+    if (user && plan) {
+      const subscriptionEndDate = new Date();
+      subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + plan.duration);
+      
+      updateUser({
+        ...user,
+        premium: true,
+        subscriptionStatus: "active",
+        subscriptionEndDate: subscriptionEndDate.toISOString()
+      });
+    }
+  }
+  
+  return payments[index];
+};
+
+export const getPaymentById = (id: string): PaymentStatus | undefined => {
+  return payments.find(payment => payment.id === id);
+};
+
+export const getPaymentsByUserId = (userId: string): PaymentStatus[] => {
+  return payments.filter(payment => payment.userId === userId);
+};
+
+// Existing utility functions
 export const getRecentAnime = (): Anime[] => {
   return [...animeData].sort((a, b) => {
     const latestEpisodeA = a.episodes.length > 0 ? 

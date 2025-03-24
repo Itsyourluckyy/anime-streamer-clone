@@ -10,6 +10,10 @@ import BrowseAnime from "./pages/BrowseAnime";
 import AnimeDetails from "./pages/AnimeDetails";
 import VideoPlayerPage from "./pages/VideoPlayerPage";
 import Auth from "./pages/Auth";
+import DevPortal from "./pages/DevPortal";
+import PremiumPlans from "./pages/PremiumPlans";
+import PaymentPage from "./pages/PaymentPage";
+import PaymentConfirmation from "./pages/PaymentConfirmation";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +30,10 @@ const App = () => (
           <Route path="/anime/:id/watch/:episodeNumber" element={<VideoPlayerPage />} />
           <Route path="/login" element={<Auth />} />
           <Route path="/signup" element={<Auth />} />
+          <Route path="/dev/777" element={<DevPortal />} />
+          <Route path="/premium" element={<PremiumPlans />} />
+          <Route path="/payment/:planId" element={<PaymentPage />} />
+          <Route path="/payment/confirmation/:paymentId" element={<PaymentConfirmation />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
