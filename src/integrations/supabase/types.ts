@@ -9,7 +9,134 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      anime: {
+        Row: {
+          banner_image: string | null
+          cover_image: string
+          created_at: string | null
+          description: string
+          id: string
+          rating: number
+          release_year: number
+          status: string
+          studio: string
+          title: string
+        }
+        Insert: {
+          banner_image?: string | null
+          cover_image: string
+          created_at?: string | null
+          description: string
+          id?: string
+          rating: number
+          release_year: number
+          status: string
+          studio: string
+          title: string
+        }
+        Update: {
+          banner_image?: string | null
+          cover_image?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          rating?: number
+          release_year?: number
+          status?: string
+          studio?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      anime_genres: {
+        Row: {
+          anime_id: string
+          genre_id: string
+        }
+        Insert: {
+          anime_id: string
+          genre_id: string
+        }
+        Update: {
+          anime_id?: string
+          genre_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anime_genres_anime_id_fkey"
+            columns: ["anime_id"]
+            isOneToOne: false
+            referencedRelation: "anime"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anime_genres_genre_id_fkey"
+            columns: ["genre_id"]
+            isOneToOne: false
+            referencedRelation: "genres"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      episodes: {
+        Row: {
+          anime_id: string | null
+          created_at: string | null
+          duration: number
+          id: string
+          number: number
+          release_date: string
+          thumbnail: string
+          title: string
+          video_url: string
+        }
+        Insert: {
+          anime_id?: string | null
+          created_at?: string | null
+          duration: number
+          id?: string
+          number: number
+          release_date: string
+          thumbnail: string
+          title: string
+          video_url: string
+        }
+        Update: {
+          anime_id?: string | null
+          created_at?: string | null
+          duration?: number
+          id?: string
+          number?: number
+          release_date?: string
+          thumbnail?: string
+          title?: string
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episodes_anime_id_fkey"
+            columns: ["anime_id"]
+            isOneToOne: false
+            referencedRelation: "anime"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      genres: {
+        Row: {
+          id: string
+          name: string
+        }
+        Insert: {
+          id?: string
+          name: string
+        }
+        Update: {
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

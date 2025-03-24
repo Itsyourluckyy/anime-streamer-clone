@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getAnimeById } from "@/services/animeData";
+import { getAnimeById, animeData } from "@/services/animeData";
 import Navbar from "@/components/layout/Navbar";
 import VideoPlayer from "@/components/anime/VideoPlayer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
