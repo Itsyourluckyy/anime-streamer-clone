@@ -5,11 +5,11 @@ export interface Anime {
   description: string;
   coverImage: string;
   bannerImage?: string;
-  episodes: Episode[];
   genres: string[];
-  status: "ongoing" | "completed";
+  episodes: Episode[];
   rating: number;
   releaseYear: number;
+  status: "ongoing" | "completed";
   studio: string;
 }
 
@@ -23,32 +23,11 @@ export interface Episode {
   releaseDate: string;
 }
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  avatar?: string;
-  premium: boolean;
-  role?: "user" | "developer" | "admin";
-  subscriptionStatus?: "active" | "inactive" | "pending";
-  subscriptionEndDate?: string;
-}
-
-export interface PremiumPlan {
-  id: string;
-  name: string;
-  price: number;
-  duration: number; // in months
-  features: string[];
-  popular?: boolean;
-}
-
 export interface PaymentStatus {
   id: string;
   userId: string;
   planId: string;
-  status: "pending" | "completed" | "failed";
   amount: number;
   paymentDate: string;
-  paymentMethod: string;
+  status: "pending" | "completed" | "failed";
 }

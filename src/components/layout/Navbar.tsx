@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, Menu, X, User, Bell, Play, HelpCircle } from "lucide-react";
+import { Search, Menu, X, User, Bell, Play, HelpCircle, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -42,6 +42,10 @@ const Navbar = () => {
 
   const handlePremium = () => {
     toast.info("Premium features coming soon!");
+  };
+
+  const handleDevPortal = () => {
+    navigate("/dev/777");
   };
 
   return (
@@ -135,6 +139,15 @@ const Navbar = () => {
             >
               Try Premium
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDevPortal}
+              className="border-purple-600 text-purple-600 hover:bg-purple-50"
+            >
+              <Code className="h-4 w-4 mr-2" />
+              Dev Portal
+            </Button>
           </div>
 
           <div className="hidden md:flex items-center gap-2">
@@ -188,6 +201,12 @@ const Navbar = () => {
                     >
                       Try Premium
                     </div>
+                    <Link to="/dev/777" className="text-base font-medium py-2 text-purple-600 hover:text-purple-800 transition-colors">
+                      <div className="flex items-center">
+                        <Code className="h-4 w-4 mr-2" />
+                        Dev Portal
+                      </div>
+                    </Link>
                   </nav>
                 </div>
                 

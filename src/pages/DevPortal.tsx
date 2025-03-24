@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
@@ -53,17 +52,20 @@ import {
   deleteAnime, 
   getAllGenres,
   payments,
-  updatePaymentStatus,
-  PaymentStatus
+  updatePaymentStatus
 } from "@/services/animeData";
-import { Anime, Episode } from "@/types";
+import { Anime, Episode, PaymentStatus } from "@/types";
 import { Plus, Trash, Edit, Check, X, Search, DollarSign } from "lucide-react";
 import { useForm } from "react-hook-form";
+
+const DEV_EMAIL = "itsyourluckyy@gmail.com";
+const DEV_PASSWORD = "mlpnkobj";
 
 const DevPortal: React.FC = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthorizing, setIsAuthorizing] = useState(true);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [animeList, setAnimeList] = useState<Anime[]>([]);
   const [selectedAnime, setSelectedAnime] = useState<Anime | null>(null);
@@ -78,8 +80,7 @@ const DevPortal: React.FC = () => {
   }, []);
 
   const authorizeAccess = () => {
-    // Simple password check - in a real app, use proper authentication
-    if (password === "dev777") {
+    if (email === DEV_EMAIL && password === DEV_PASSWORD) {
       setIsAuthenticated(true);
       toast.success("Developer access granted");
     } else {
@@ -148,10 +149,21 @@ const DevPortal: React.FC = () => {
         <div className="container mx-auto px-4 py-16 max-w-md">
           <div className="bg-white rounded-lg shadow-md p-8">
             <h1 className="text-2xl font-bold mb-6 text-center">Developer Portal</h1>
-            <p className="text-gray-600 mb-6 text-center">Enter developer password to access portal</p>
+            <p className="text-gray-600 mb-6 text-center">Enter developer credentials to access portal</p>
             
             <div className="space-y-4">
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <Input 
+                  type="email" 
+                  placeholder="Enter developer email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                 <Input 
                   type="password" 
                   placeholder="Enter developer password"
