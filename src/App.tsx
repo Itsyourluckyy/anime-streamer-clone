@@ -15,6 +15,7 @@ import PremiumPlans from "./pages/PremiumPlans";
 import PaymentPage from "./pages/PaymentPage";
 import PaymentConfirmation from "./pages/PaymentConfirmation";
 import Contact from "./pages/Contact";
+import VideoManagement from "./pages/VideoManagement";
 import { useState } from "react";
 
 const App = () => {
@@ -39,6 +40,7 @@ const App = () => {
             <Route path="/payment/:planId" element={<PaymentPage />} />
             <Route path="/payment/confirmation/:paymentId" element={<PaymentConfirmation />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/videos" element={<VideoManagement />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

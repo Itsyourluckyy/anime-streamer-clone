@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search, Menu, X, User, Bell, Play, HelpCircle, Code, Mail } from "lucide-react";
@@ -14,6 +13,14 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
+
+  const navigationItems = [
+    { name: "Home", href: "/" },
+    { name: "Anime", href: "/browse" },
+    { name: "Premium", href: "/premium" },
+    { name: "Videos", href: "/videos" },
+    { name: "Contact", href: "/contact" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,18 +72,11 @@ const Navbar = () => {
           </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/browse" className="text-sm font-medium hover:text-orange-600 transition-colors">
-              Browse
-            </Link>
-            <Link to="/browse?filter=new" className="text-sm font-medium hover:text-orange-600 transition-colors">
-              New Releases
-            </Link>
-            <Link to="/browse?filter=popular" className="text-sm font-medium hover:text-orange-600 transition-colors">
-              Popular
-            </Link>
-            <Link to="/contact" className="text-sm font-medium hover:text-orange-600 transition-colors">
-              Contact
-            </Link>
+            {navigationItems.map((item) => (
+              <Link key={item.name} to={item.href} className="text-sm font-medium hover:text-orange-600 transition-colors">
+                {item.name}
+              </Link>
+            ))}
           </nav>
         </div>
 
@@ -183,36 +183,11 @@ const Navbar = () => {
                   </Link>
                   
                   <nav className="flex flex-col space-y-4">
-                    <Link to="/browse" className="text-base font-medium py-2 hover:text-orange-600 transition-colors">
-                      Browse
-                    </Link>
-                    <Link to="/browse?filter=new" className="text-base font-medium py-2 hover:text-orange-600 transition-colors">
-                      New Releases
-                    </Link>
-                    <Link to="/browse?filter=popular" className="text-base font-medium py-2 hover:text-orange-600 transition-colors">
-                      Popular
-                    </Link>
-                    <Link to="/contact" className="text-base font-medium py-2 hover:text-orange-600 transition-colors">
-                      Contact
-                    </Link>
-                    <Link to="/login" className="text-base font-medium py-2 hover:text-orange-600 transition-colors">
-                      Login
-                    </Link>
-                    <Link to="/signup" className="text-base font-medium py-2 hover:text-orange-600 transition-colors">
-                      Sign Up
-                    </Link>
-                    <div 
-                      onClick={handlePremium}
-                      className="text-base font-medium py-2 text-orange-600 cursor-pointer hover:underline"
-                    >
-                      Try Premium
-                    </div>
-                    <Link to="/dev/777" className="text-base font-medium py-2 text-purple-600 hover:text-purple-800 transition-colors">
-                      <div className="flex items-center">
-                        <Code className="h-4 w-4 mr-2" />
-                        Dev Portal
-                      </div>
-                    </Link>
+                    {navigationItems.map((item) => (
+                      <Link key={item.name} to={item.href} className="text-base font-medium py-2 hover:text-orange-600 transition-colors">
+                        {item.name}
+                      </Link>
+                    ))}
                   </nav>
                 </div>
                 
