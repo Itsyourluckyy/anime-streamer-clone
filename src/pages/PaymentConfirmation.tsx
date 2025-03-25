@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
@@ -5,7 +6,7 @@ import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { getPaymentById } from "@/services/animeData";
 import { PaymentStatus } from "@/types";
-import { Clock, CheckCircle, Home, Play, X } from "lucide-react";
+import { Clock, CheckCircle, Home, Play, X as XIcon } from "lucide-react";
 import { toast } from "sonner";
 
 const PaymentConfirmation: React.FC = () => {
@@ -51,7 +52,7 @@ const PaymentConfirmation: React.FC = () => {
         return {
           title: "Payment Failed",
           description: "Sorry, your payment couldn't be processed. Please try again.",
-          icon: <X className="h-12 w-12 text-red-500" />,
+          icon: <XIcon className="h-12 w-12 text-red-500" />,
           color: "text-red-600",
           bgColor: "bg-red-100"
         };
@@ -165,11 +166,5 @@ const PaymentConfirmation: React.FC = () => {
     </div>
   );
 };
-
-const X = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M18 6 6 18M6 6l12 12"/>
-  </svg>
-);
 
 export default PaymentConfirmation;
