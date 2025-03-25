@@ -1,5 +1,6 @@
+
 // Import key types
-import { Anime, Episode, PaymentStatus } from "@/types";
+import { Anime, Episode, PaymentStatus, PremiumPlan } from "@/types";
 
 // Mock anime data
 let animeData: Anime[] = [
@@ -512,3 +513,200 @@ let animeData: Anime[] = [
         releaseDate: "2011-10-02T10:30:00Z"
       }
     ],
+    genres: ["Action", "Adventure", "Fantasy"],
+    status: "ongoing",
+    rating: 4.9,
+    releaseYear: 2011,
+    studio: "Madhouse"
+  }
+];
+
+// Mock premium plans
+const premiumPlans: PremiumPlan[] = [
+  {
+    id: "basic",
+    name: "Basic Plan",
+    price: 499,
+    duration: 30, // in days
+    features: [
+      "Ad-free viewing",
+      "HD streaming",
+      "Watch on 1 device at a time",
+    ]
+  },
+  {
+    id: "standard",
+    name: "Standard Plan",
+    price: 799,
+    duration: 30,
+    features: [
+      "Ad-free viewing",
+      "Full HD streaming",
+      "Watch on 2 devices at a time",
+      "Download for offline viewing"
+    ],
+    popular: true
+  },
+  {
+    id: "premium",
+    name: "Premium Plan",
+    price: 1299,
+    duration: 30,
+    features: [
+      "Ad-free viewing",
+      "4K Ultra HD streaming",
+      "Watch on 4 devices at a time",
+      "Download for offline viewing",
+      "Early access to new episodes"
+    ]
+  },
+  {
+    id: "annual",
+    name: "Annual Plan",
+    price: 7999,
+    duration: 365,
+    features: [
+      "All Premium Plan features",
+      "Save 35% compared to monthly",
+      "Free merchandise voucher"
+    ]
+  }
+];
+
+// Mock payment data
+let payments: PaymentStatus[] = [
+  {
+    id: "payment-001",
+    userId: "user-001",
+    planId: "premium",
+    amount: 1299,
+    paymentDate: "2023-08-15T10:30:00Z",
+    status: "completed",
+    paymentMethod: "Credit Card"
+  },
+  {
+    id: "payment-002",
+    userId: "user-002",
+    planId: "standard",
+    amount: 799,
+    paymentDate: "2023-08-16T14:45:00Z",
+    status: "pending",
+    paymentMethod: "UPI"
+  },
+  {
+    id: "payment-003",
+    userId: "user-003",
+    planId: "annual",
+    amount: 7999,
+    paymentDate: "2023-08-17T09:15:00Z",
+    status: "pending",
+    paymentMethod: "Net Banking"
+  },
+  {
+    id: "payment-004",
+    userId: "user-004",
+    planId: "basic",
+    amount: 499,
+    paymentDate: "2023-08-17T11:30:00Z",
+    status: "failed",
+    paymentMethod: "Credit Card"
+  },
+  {
+    id: "payment-005",
+    userId: "user-005",
+    planId: "premium",
+    amount: 1299,
+    paymentDate: "2023-08-18T16:20:00Z",
+    status: "pending",
+    paymentMethod: "UPI"
+  }
+];
+
+// Get all anime
+export { animeData, premiumPlans, payments };
+
+// Get anime by ID
+export const getAnimeById = (id: string): Anime | undefined => {
+  return animeData.find(anime => anime.id === id);
+};
+
+// Get anime by title
+export const getAnimeByTitle = (title: string): Anime | undefined => {
+  return animeData.find(anime => anime.title.toLowerCase().includes(title.toLowerCase()));
+};
+
+// Get all genres
+export const getAllGenres = (): string[] => {
+  const genres = new Set<string>();
+  animeData.forEach(anime => {
+    anime.genres.forEach(genre => genres.add(genre));
+  });
+  return Array.from(genres).sort();
+};
+
+// Add new anime
+export const addAnime = (anime: Anime): boolean => {
+  try {
+    animeData.push(anime);
+    return true;
+  } catch (error) {
+    console.error("Error adding anime:", error);
+    return false;
+  }
+};
+
+// Update anime
+export const updateAnime = (updatedAnime: Anime): boolean => {
+  try {
+    const index = animeData.findIndex(anime => anime.id === updatedAnime.id);
+    if (index !== -1) {
+      animeData[index] = updatedAnime;
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error updating anime:", error);
+    return false;
+  }
+};
+
+// Delete anime
+export const deleteAnime = (id: string): boolean => {
+  try {
+    const initialLength = animeData.length;
+    animeData = animeData.filter(anime => anime.id !== id);
+    return animeData.length < initialLength;
+  } catch (error) {
+    console.error("Error deleting anime:", error);
+    return false;
+  }
+};
+
+// Get episode by anime ID and episode number
+export const getEpisodeByNumber = (animeId: string, episodeNumber: number): Episode | undefined => {
+  const anime = getAnimeById(animeId);
+  if (!anime) return undefined;
+  
+  return anime.episodes.find(episode => episode.number === episodeNumber);
+};
+
+// Update payment status
+export const updatePaymentStatus = (paymentId: string, newStatus: "pending" | "completed" | "failed"): PaymentStatus | null => {
+  const index = payments.findIndex(p => p.id === paymentId);
+  if (index === -1) return null;
+  
+  const payment = { ...payments[index], status: newStatus };
+  payments[index] = payment;
+  return payment;
+};
+
+// Get plan by ID
+export const getPlanById = (planId: string): PremiumPlan | undefined => {
+  return premiumPlans.find(plan => plan.id === planId);
+};
+
+// Create new payment
+export const createPayment = (payment: PaymentStatus): PaymentStatus => {
+  payments.push(payment);
+  return payment;
+};
