@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
@@ -6,7 +5,7 @@ import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { getPaymentById } from "@/services/animeData";
 import { PaymentStatus } from "@/types";
-import { Clock, CheckCircle, Home, Play } from "lucide-react";
+import { Clock, CheckCircle, Home, Play, X } from "lucide-react";
 import { toast } from "sonner";
 
 const PaymentConfirmation: React.FC = () => {
@@ -113,10 +112,12 @@ const PaymentConfirmation: React.FC = () => {
                 <span className="text-gray-600">Date</span>
                 <span className="font-medium">{new Date(payment.paymentDate).toLocaleDateString()}</span>
               </div>
-              <div className="flex justify-between py-2 border-b border-gray-100">
-                <span className="text-gray-600">Payment Method</span>
-                <span className="font-medium">{payment.paymentMethod}</span>
-              </div>
+              {payment.paymentMethod && (
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Payment Method</span>
+                  <span className="font-medium">{payment.paymentMethod}</span>
+                </div>
+              )}
               <div className="flex justify-between py-2 border-b border-gray-100">
                 <span className="text-gray-600">Status</span>
                 <span className={`font-medium capitalize ${
@@ -165,7 +166,6 @@ const PaymentConfirmation: React.FC = () => {
   );
 };
 
-// Add missing icon for failed status
 const X = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="M18 6 6 18M6 6l12 12"/>

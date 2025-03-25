@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, Menu, X, User, Bell, Play, HelpCircle, Code } from "lucide-react";
+import { Search, Menu, X, User, Bell, Play, HelpCircle, Code, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -73,6 +73,9 @@ const Navbar = () => {
             </Link>
             <Link to="/browse?filter=popular" className="text-sm font-medium hover:text-orange-600 transition-colors">
               Popular
+            </Link>
+            <Link to="/contact" className="text-sm font-medium hover:text-orange-600 transition-colors">
+              Contact
             </Link>
           </nav>
         </div>
@@ -188,6 +191,9 @@ const Navbar = () => {
                     </Link>
                     <Link to="/browse?filter=popular" className="text-base font-medium py-2 hover:text-orange-600 transition-colors">
                       Popular
+                    </Link>
+                    <Link to="/contact" className="text-base font-medium py-2 hover:text-orange-600 transition-colors">
+                      Contact
                     </Link>
                     <Link to="/login" className="text-base font-medium py-2 hover:text-orange-600 transition-colors">
                       Login

@@ -14,6 +14,7 @@ import DevPortal from "./pages/DevPortal";
 import PremiumPlans from "./pages/PremiumPlans";
 import PaymentPage from "./pages/PaymentPage";
 import PaymentConfirmation from "./pages/PaymentConfirmation";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/premium" element={<PremiumPlans />} />
           <Route path="/payment/:planId" element={<PaymentPage />} />
           <Route path="/payment/confirmation/:paymentId" element={<PaymentConfirmation />} />
+          <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

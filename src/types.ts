@@ -30,4 +30,24 @@ export interface PaymentStatus {
   amount: number;
   paymentDate: string;
   status: "pending" | "completed" | "failed";
+  paymentMethod: string;
+}
+
+export interface PremiumPlan {
+  id: string;
+  name: string;
+  price: number;
+  duration: number;
+  features: string[];
+  popular?: boolean;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  premium: boolean;
+  role: "user" | "developer";
+  subscriptionStatus?: "active" | "expired" | "cancelled";
+  subscriptionEndDate?: string;
 }

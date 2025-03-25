@@ -485,3 +485,8 @@ export const searchAnime = (query: string): Anime[] => {
     anime.studio.toLowerCase().includes(normalizedQuery)
   );
 };
+
+// Add this function to ensure the anime update is working properly
+export const findAnimeById = (id: string): Anime | undefined => {
+  return animeData.find(anime => anime.id === id);
+};

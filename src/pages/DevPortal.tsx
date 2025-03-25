@@ -109,7 +109,7 @@ const DevPortal: React.FC = () => {
     if (window.confirm("Are you sure you want to delete this anime?")) {
       const success = deleteAnime(id);
       if (success) {
-        setAnimeList(animeList.filter(anime => anime.id !== id));
+        setAnimeList(prevList => prevList.filter(anime => anime.id !== id));
         toast.success("Anime deleted successfully");
       } else {
         toast.error("Failed to delete anime");
@@ -837,3 +837,4 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
 };
 
 export default DevPortal;
+
