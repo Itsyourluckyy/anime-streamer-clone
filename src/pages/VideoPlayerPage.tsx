@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getAnimeById, animeData } from "@/services/animeData";
@@ -17,8 +16,9 @@ const VideoPlayerPage = () => {
   const [activeTab, setActiveTab] = useState<"episodes" | "comments" | "details">("episodes");
   const [showRecommended, setShowRecommended] = useState(true);
   
-  const anime = id ? getAnimeById(id) : undefined;
   const currentEpisodeNumber = episodeNumber ? parseInt(episodeNumber) : 1;
+  
+  const anime = id ? getAnimeById(id) : undefined;
   
   const currentEpisode = anime?.episodes.find(
     (ep) => ep.number === currentEpisodeNumber
@@ -32,7 +32,6 @@ const VideoPlayerPage = () => {
     (ep) => ep.number === currentEpisodeNumber + 1
   );
 
-  // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id, episodeNumber]);
@@ -41,7 +40,19 @@ const VideoPlayerPage = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
         <h1 className="text-2xl font-semibold mb-4">Episode not found</h1>
-        <Button onClick={() => navigate("/")}>Back to Home</Button>
+        <p className="text-gray-600 mb-6">
+          The episode you're looking for doesn't exist or might have been removed.
+        </p>
+        <div className="flex gap-4">
+          {id && (
+            <Button onClick={() => navigate(`/anime/${id}`)}>
+              View All Episodes
+            </Button>
+          )}
+          <Button onClick={() => navigate("/")} variant="outline">
+            Back to Home
+          </Button>
+        </div>
       </div>
     );
   }
@@ -68,7 +79,6 @@ const VideoPlayerPage = () => {
       
       <main className="flex-grow pt-20 pb-12">
         <div className="container mx-auto px-4 max-w-7xl">
-          {/* Video and Episode Info */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Link 
@@ -125,7 +135,6 @@ const VideoPlayerPage = () => {
                   </div>
                 </div>
                 
-                {/* Tabs */}
                 <div className="mt-8">
                   <Tabs value={activeTab} onValueChange={setActiveTab as any}>
                     <TabsList className="grid w-full grid-cols-3">
@@ -226,7 +235,6 @@ const VideoPlayerPage = () => {
                 </div>
               </div>
               
-              {/* Recommended Section */}
               <div className="lg:col-span-3">
                 <div className="bg-gray-50 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-4">

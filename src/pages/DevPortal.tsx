@@ -451,7 +451,7 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
   const [episodes, setEpisodes] = useState<Episode[]>(anime?.episodes || []);
   const [newEpisode, setNewEpisode] = useState<Partial<Episode>>({
     title: "",
-    number: 1,
+    number: episodes.length > 0 ? Math.max(...episodes.map(e => e.number)) + 1 : 1,
     duration: 24,
     thumbnail: "",
     videoUrl: "",
@@ -507,13 +507,15 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
   };
 
   const handleSubmit = (data: Partial<Anime>) => {
+    const sortedEpisodes = [...episodes].sort((a, b) => a.number - b.number);
+    
     const newAnime: Anime = {
       id: anime?.id || Date.now().toString(),
       title: data.title || "",
       description: data.description || "",
       coverImage: data.coverImage || coverImagePreview,
       bannerImage: data.bannerImage || bannerImagePreview,
-      episodes: episodes,
+      episodes: sortedEpisodes,
       genres: selectedGenres,
       status: data.status as "ongoing" | "completed",
       rating: data.rating || 4.5,
@@ -530,10 +532,12 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
       return;
     }
     
+    const episodeId = `${anime?.id || "new"}-ep-${Date.now()}`;
+    
     const episode: Episode = {
-      id: `${anime?.id || "new"}-${newEpisode.number}`,
+      id: episodeId,
       title: newEpisode.title || "",
-      number: newEpisode.number || episodes.length + 1,
+      number: newEpisode.number || (episodes.length > 0 ? Math.max(...episodes.map(e => e.number)) + 1 : 1),
       thumbnail: thumbnailPreview || newEpisode.thumbnail || "",
       duration: newEpisode.duration || 24,
       videoUrl: newEpisode.videoUrl || "",
@@ -541,19 +545,35 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
     };
     
     setEpisodes([...episodes, episode]);
+    
     setNewEpisode({
       title: "",
-      number: episodes.length + 2,
+      number: episode.number + 1,
       duration: 24,
       thumbnail: "",
       videoUrl: "",
       releaseDate: new Date().toISOString().split('T')[0]
     });
+    
     setThumbnailPreview("");
+    toast.success(`Episode ${episode.number} added successfully`);
   };
 
   const removeEpisode = (index: number) => {
     setEpisodes(episodes.filter((_, i) => i !== index));
+    
+    if (episodes.length > 0) {
+      const maxEpisodeNumber = Math.max(...episodes.map(e => e.number));
+      setNewEpisode(prev => ({
+        ...prev,
+        number: maxEpisodeNumber + 1
+      }));
+    } else {
+      setNewEpisode(prev => ({
+        ...prev,
+        number: 1
+      }));
+    }
   };
 
   const addGenre = () => {
@@ -883,7 +903,7 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
             {episodes.length > 0 ? (
               <div className="space-y-4 mb-4">
                 {episodes.map((episode, index) => (
-                  <div key={index} className="flex items-center space-x-2 p-3 border rounded-md bg-gray-50">
+                  <div key={episode.id} className="flex items-center space-x-2 p-3 border rounded-md bg-gray-50">
                     <div className="flex-1">
                       <p className="font-medium">{episode.number}. {episode.title}</p>
                       <p className="text-sm text-gray-500">Duration: {episode.duration} min</p>
@@ -939,6 +959,7 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
                     onChange={(e) => setNewEpisode({...newEpisode, releaseDate: e.target.value})}
                   />
                 </div>
+                
                 <div className="sm:col-span-2">
                   <label className="text-sm font-medium">Thumbnail</label>
                   <div className="space-y-2">

@@ -1,492 +1,515 @@
-import { Anime, PremiumPlan, User, PaymentStatus } from "../types";
+// Import key types
+import { Anime, Episode, PaymentStatus } from "@/types";
 
-// Local storage keys
-const ANIME_DATA_KEY = "animestream_anime_data";
-const USERS_KEY = "animestream_users";
-const PREMIUM_PLANS_KEY = "animestream_premium_plans";
-const PAYMENTS_KEY = "animestream_payments";
-
-// Initialize data from localStorage or use default data
-const getInitialAnimeData = (): Anime[] => {
-  const storedData = localStorage.getItem(ANIME_DATA_KEY);
-  if (storedData) {
-    return JSON.parse(storedData);
-  }
-  return defaultAnimeData;
-};
-
-// Default premium plans
-export const premiumPlans: PremiumPlan[] = [
+// Mock anime data
+let animeData: Anime[] = [
   {
-    id: "basic",
-    name: "Basic",
-    price: 499,
-    duration: 1,
-    features: [
-      "Ad-free streaming",
-      "Access to all anime",
-      "HD quality"
-    ]
-  },
-  {
-    id: "standard",
-    name: "Standard",
-    price: 899,
-    duration: 3,
-    features: [
-      "All Basic features",
-      "Download episodes",
-      "Full HD quality",
-      "Stream on 2 devices"
-    ],
-    popular: true
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    price: 1299,
-    duration: 6,
-    features: [
-      "All Standard features",
-      "4K Ultra HD quality",
-      "Stream on 4 devices",
-      "Early access to new episodes"
-    ]
-  }
-];
-
-// Mock users
-const mockUsers: User[] = [
-  {
-    id: "1",
-    username: "anime_lover",
-    email: "anime@example.com",
-    premium: false,
-    role: "user"
-  },
-  {
-    id: "dev777",
-    username: "developer777",
-    email: "dev@animestream.com",
-    premium: true,
-    role: "developer"
-  }
-];
-
-// Get initial users from localStorage or use default
-const getInitialUsers = (): User[] => {
-  const storedUsers = localStorage.getItem(USERS_KEY);
-  if (storedUsers) {
-    return JSON.parse(storedUsers);
-  }
-  
-  // Store default users and return them
-  localStorage.setItem(USERS_KEY, JSON.stringify(mockUsers));
-  return mockUsers;
-};
-
-// Initialize payment statuses
-const getInitialPayments = (): PaymentStatus[] => {
-  const storedPayments = localStorage.getItem(PAYMENTS_KEY);
-  if (storedPayments) {
-    return JSON.parse(storedPayments);
-  }
-  return [];
-};
-
-// Default anime data
-const defaultAnimeData: Anime[] = [
-  {
-    id: "1",
-    title: "Demon Slayer",
-    description: "A young man named Tanjiro joins the Demon Slayer Corps to find a cure for his sister, who has been turned into a demon after their family was slaughtered by demons.",
-    coverImage: "https://i.pinimg.com/originals/d3/15/de/d315de0cb933e7bcaae099cf5f77af9f.jpg",
-    bannerImage: "https://cdn.oneesports.gg/cdn-data/2023/02/DemonSlayer_SeasonAll_Anime.jpg",
-    episodes: [
-      {
-        id: "1-1",
-        title: "Cruelty",
-        number: 1,
-        thumbnail: "https://m.media-amazon.com/images/M/MV5BNzEzMzM2ODQtZDBkMS00NWEzLTk5NTYtMGEyM2ZiZGEwNzk5XkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg",
-        duration: 24,
-        videoUrl: "https://example.com/video1",
-        releaseDate: "2019-04-06"
-      },
-      {
-        id: "1-2",
-        title: "Trainer Sakonji Urokodaki",
-        number: 2,
-        thumbnail: "https://static1.cbrimages.com/wordpress/wp-content/uploads/2019/09/Demon-Slayer-Episode-2.jpg",
-        duration: 24,
-        videoUrl: "https://example.com/video2",
-        releaseDate: "2019-04-13"
-      },
-      {
-        id: "1-3",
-        title: "Sabito and Makomo",
-        number: 3,
-        thumbnail: "https://m.media-amazon.com/images/M/MV5BODM1OTc1NTYtYmQ3Zi00M2ZmLWIwNDQtNTZmYWJiN2Y3MWU1XkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg",
-        duration: 24,
-        videoUrl: "https://example.com/video3",
-        releaseDate: "2019-04-20"
-      },
-    ],
-    genres: ["Action", "Fantasy", "Historical"],
-    status: "ongoing",
-    rating: 4.8,
-    releaseYear: 2019,
-    studio: "Ufotable"
-  },
-  {
-    id: "2",
+    id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=",
     title: "Attack on Titan",
-    description: "In a world where humanity lives within cities surrounded by enormous walls due to the Titans, gigantic humanoid creatures who devour humans seemingly without reason, a young boy named Eren Yeager vows to rid the world of the Titan threat.",
-    coverImage: "https://m.media-amazon.com/images/I/81dH7-pkjiL._AC_UF1000,1000_QL80_.jpg",
-    bannerImage: "https://i.ytimg.com/vi/qonX5gFFzRE/maxresdefault.jpg",
+    description: "In a world where humanity is threatened by giant creatures known as Titans, Eren Yeager joins the Survey Corps to fight back and uncover the mysteries of their existence.",
+    coverImage: "https://s4.anilist.co/file/anime/cover/large/bx20958-whJfwjFuGTjV.jpg",
+    bannerImage: "https://s4.anilist.co/file/anime/banner/20958-fWNJyc79t6N4.jpg",
     episodes: [
       {
-        id: "2-1",
-        title: "To You, 2,000 Years From Now",
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-1",
+        title: "To You, in 2000 Years: The Fall of Shiganshina, Part 1",
         number: 1,
-        thumbnail: "https://i.ytimg.com/vi/ZHhr1z_bzNI/maxresdefault.jpg",
+        thumbnail: "https://i.ytimg.com/vi/Ncw8-T0kKJM/maxresdefault.jpg",
         duration: 24,
-        videoUrl: "https://example.com/aot-video1",
-        releaseDate: "2013-04-07"
+        videoUrl: "https://www.youtube.com/watch?v=Ncw8-T0kKJM",
+        releaseDate: "2013-04-07T17:30:00Z"
       },
       {
-        id: "2-2",
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-2",
         title: "That Day",
         number: 2,
-        thumbnail: "https://animetime.pl/wp-content/uploads/2023/02/atak-tytanow-sezon-1-odcinek-2-8.jpg",
+        thumbnail: "https://i.ytimg.com/vi/ikkFn4jS-wk/maxresdefault.jpg",
         duration: 24,
-        videoUrl: "https://example.com/aot-video2",
-        releaseDate: "2013-04-14"
-      },
-    ],
-    genres: ["Action", "Dark Fantasy", "Post-Apocalyptic"],
-    status: "completed",
-    rating: 4.9,
-    releaseYear: 2013,
-    studio: "MAPPA"
-  },
-  {
-    id: "3",
-    title: "Jujutsu Kaisen",
-    description: "A boy swallows a cursed talisman - the finger of a demon - and becomes cursed himself. He enters a shaman school to be able to locate the demon's other body parts and thus exorcise himself.",
-    coverImage: "https://images.justwatch.com/poster/301533545/s718/jujutsu-kaisen.jpg",
-    bannerImage: "https://images.alphacoders.com/110/1108496.jpg",
-    episodes: [
-      {
-        id: "3-1",
-        title: "Ryomen Sukuna",
-        number: 1,
-        thumbnail: "https://qph.cf2.quoracdn.net/main-qimg-d6a9d6e8eccdff0d5e4bc9d5a5c9af3b-lq",
-        duration: 23,
-        videoUrl: "https://example.com/jjk-video1",
-        releaseDate: "2020-10-03"
+        videoUrl: "https://www.youtube.com/watch?v=ikkFn4jS-wk",
+        releaseDate: "2013-04-14T17:30:00Z"
       },
       {
-        id: "3-2",
-        title: "For Myself",
-        number: 2,
-        thumbnail: "https://m.media-amazon.com/images/M/MV5BZDgxYzk1NzYtNzA5Ny00MDJiLWE5YzgtODk2ZjZkZGFhYTQxXkEyXkFqcGdeQXVyMzgxODM4NjM@._V1_.jpg",
-        duration: 23,
-        videoUrl: "https://example.com/jjk-video2",
-        releaseDate: "2020-10-10"
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-3",
+        title: "A Dim Light Amid Despair: Humanity's Comeback, Part 1",
+        number: 3,
+        thumbnail: "https://i.ytimg.com/vi/j-fK_aQL-TQ/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=j-fK_aQL-TQ",
+        releaseDate: "2013-04-21T17:30:00Z"
       },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-4",
+        title: "The Night of the Closing Ceremony: Humanity's Comeback, Part 2",
+        number: 4,
+        thumbnail: "https://i.ytimg.com/vi/J-Fu-EfuMnQ/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=J-Fu-EfuMnQ",
+        releaseDate: "2013-04-28T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-5",
+        title: "First Battle: The Struggle for Trost, Part 1",
+        number: 5,
+        thumbnail: "https://i.ytimg.com/vi/Q-JvjJzQQxI/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=Q-JvjJzQQxI",
+        releaseDate: "2013-05-05T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-6",
+        title: "The World the Girl Saw: The Struggle for Trost, Part 2",
+        number: 6,
+        thumbnail: "https://i.ytimg.com/vi/z_uoPYtfLio/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=z_uoPYtfLio",
+        releaseDate: "2013-05-12T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-7",
+        title: "Small Blade: The Struggle for Trost, Part 3",
+        number: 7,
+        thumbnail: "https://i.ytimg.com/vi/l_KMn9K-sTk/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=l_KMn9K-sTk",
+        releaseDate: "2013-05-19T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-8",
+        title: "I Can Hear His Heartbeat: The Struggle for Trost, Part 4",
+        number: 8,
+        thumbnail: "https://i.ytimg.com/vi/c_aqVX0cIho/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=c_aqVX0cIho",
+        releaseDate: "2013-05-26T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-9",
+        title: "Whereabouts of His Left Arm: The Struggle for Trost, Part 5",
+        number: 9,
+        thumbnail: "https://i.ytimg.com/vi/h_u-a6zxTak/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=h_u-a6zxTak",
+        releaseDate: "2013-06-02T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-10",
+        title: "Response: The Struggle for Trost, Part 6",
+        number: 10,
+        thumbnail: "https://i.ytimg.com/vi/j_y3mppiPEE/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=j_y3mppiPEE",
+        releaseDate: "2013-06-09T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-11",
+        title: "Idol: The Struggle for Trost, Part 7",
+        number: 11,
+        thumbnail: "https://i.ytimg.com/vi/49lYHqWtZXA/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=49lYHqWtZXA",
+        releaseDate: "2013-06-16T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-12",
+        title: "Wound: The Struggle for Trost, Part 8",
+        number: 12,
+        thumbnail: "https://i.ytimg.com/vi/c2e9JTwYR9w/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=c2e9JTwYR9w",
+        releaseDate: "2013-06-23T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-13",
+        title: "Primal Desire: The Struggle for Trost, Part 9",
+        number: 13,
+        thumbnail: "https://i.ytimg.com/vi/jJc9tESNqWQ/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=jJc9tESNqWQ",
+        releaseDate: "2013-06-30T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-14",
+        title: "Can't Look into His Eyes Yet: Eve of the Counterattack, Part 1",
+        number: 14,
+        thumbnail: "https://i.ytimg.com/vi/vdKzXViJLv8/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=vdKzXViJLv8",
+        releaseDate: "2013-07-07T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-15",
+        title: "Special Ops Squad: Eve of the Counterattack, Part 2",
+        number: 15,
+        thumbnail: "https://i.ytimg.com/vi/MZtdwT-DTw0/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=MZtdwT-DTw0",
+        releaseDate: "2013-07-14T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-16",
+        title: "What Needs to Be Done: Eve of the Counterattack, Part 3",
+        number: 16,
+        thumbnail: "https://i.ytimg.com/vi/TrKwtzyNqQA/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=TrKwtzyNqQA",
+        releaseDate: "2013-07-21T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-17",
+        title: "Female Titan: The 57th Exterior Scouting Mission, Part 1",
+        number: 17,
+        thumbnail: "https://i.ytimg.com/vi/wG3ZThnjfVQ/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=wG3ZThnjfVQ",
+        releaseDate: "2013-07-28T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-18",
+        title: "Forest of Giant Trees: The 57th Exterior Scouting Mission, Part 2",
+        number: 18,
+        thumbnail: "https://i.ytimg.com/vi/yQc-OPsFKnI/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=yQc-OPsFKnI",
+        releaseDate: "2013-08-04T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-19",
+        title: "Bite: The 57th Exterior Scouting Mission, Part 3",
+        number: 19,
+        thumbnail: "https://i.ytimg.com/vi/CCWMo8nPOlQ/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=CCWMo8nPOlQ",
+        releaseDate: "2013-08-11T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-20",
+        title: "Erwin Smith: The 57th Exterior Scouting Mission, Part 4",
+        number: 20,
+        thumbnail: "https://i.ytimg.com/vi/a_mKn-sY-lY/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=a_mKn-sY-lY",
+        releaseDate: "2013-08-18T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-21",
+        title: "Crushing Blow: The 57th Exterior Scouting Mission, Part 5",
+        number: 21,
+        thumbnail: "https://i.ytimg.com/vi/y_O9TN-Wtps/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=y_O9TN-Wtps",
+        releaseDate: "2013-08-25T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-22",
+        title: "The Defeated: The 57th Exterior Scouting Mission, Part 6",
+        number: 22,
+        thumbnail: "https://i.ytimg.com/vi/5w-jk-QtJQY/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=5w-jk-QtJQY",
+        releaseDate: "2013-09-01T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-23",
+        title: "Smile: Assault on Stohess District, Part 1",
+        number: 23,
+        thumbnail: "https://i.ytimg.com/vi/QpJoK-v3ZtY/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=QpJoK-v3ZtY",
+        releaseDate: "2013-09-08T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-24",
+        title: "Mercy: Assault on Stohess District, Part 2",
+        number: 24,
+        thumbnail: "https://i.ytimg.com/vi/9L000JlFzQw/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=9L000JlFzQw",
+        releaseDate: "2013-09-15T17:30:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkxNzEzNjY0NzQ=-ep-25",
+        title: "Wall: Assault on Stohess District, Part 3",
+        number: 25,
+        thumbnail: "https://i.ytimg.com/vi/cRAGB-haytM/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=cRAGB-haytM",
+        releaseDate: "2013-09-22T17:30:00Z"
+      }
     ],
-    genres: ["Action", "Fantasy", "Supernatural"],
+    genres: ["Action", "Drama", "Fantasy"],
     status: "ongoing",
     rating: 4.7,
-    releaseYear: 2020,
-    studio: "MAPPA"
+    releaseYear: 2013,
+    studio: "Wit Studio"
   },
   {
-    id: "4",
+    id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=",
     title: "My Hero Academia",
-    description: "A superhero-loving boy without any powers is determined to enroll in a prestigious hero academy and learn what it really means to be a hero.",
-    coverImage: "https://m.media-amazon.com/images/M/MV5BOGZmYjdjN2UtNjAwZi00YmEyLWFhNTEtNjM1MTFjOGJkOTgwXkEyXkFqcGdeQXVyMTA1NjQyNjkw._V1_FMjpg_UX1000_.jpg",
-    bannerImage: "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/c5d82de3aca26ca9e1e4e10818ac37b0.jpe",
+    description: "In a world where people with superpowers are the norm, Izuku Midoriya dreams of becoming a hero despite being born without powers.",
+    coverImage: "https://s4.anilist.co/file/anime/cover/large/bx21889-CCEJXFUb9j9z.jpg",
+    bannerImage: "https://s4.anilist.co/file/anime/banner/21889-4bTG2P3Eoftw.jpg",
     episodes: [
       {
-        id: "4-1",
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-1",
         title: "Izuku Midoriya: Origin",
         number: 1,
-        thumbnail: "https://static1.cbrimages.com/wordpress/wp-content/uploads/2019/08/My-Hero-Academia-Season-1-Episode-1.jpg",
+        thumbnail: "https://i.ytimg.com/vi/UmKj4KxSjmk/maxresdefault.jpg",
         duration: 24,
-        videoUrl: "https://example.com/mha-video1",
-        releaseDate: "2016-04-03"
+        videoUrl: "https://www.youtube.com/watch?v=UmKj4KxSjmk",
+        releaseDate: "2016-04-03T17:00:00Z"
       },
       {
-        id: "4-2",
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-2",
         title: "What It Takes to Be a Hero",
         number: 2,
-        thumbnail: "https://m.media-amazon.com/images/M/MV5BOGI5YzEyYjEtMGI0MC00ZTRkLTg2YWYtYjI1YzQ2YTVkMzVkXkEyXkFqcGdeQXVyNjc3OTE4Nzk@._V1_.jpg",
+        thumbnail: "https://i.ytimg.com/vi/TjJ3jJ_jE3k/maxresdefault.jpg",
         duration: 24,
-        videoUrl: "https://example.com/mha-video2",
-        releaseDate: "2016-04-10"
+        videoUrl: "https://www.youtube.com/watch?v=TjJ3jJ_jE3k",
+        releaseDate: "2016-04-10T17:00:00Z"
       },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-3",
+        title: "Roaring Muscles",
+        number: 3,
+        thumbnail: "https://i.ytimg.com/vi/Qv-Fgemiw9o/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=Qv-Fgemiw9o",
+        releaseDate: "2016-04-17T17:00:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-4",
+        title: "Start Line",
+        number: 4,
+        thumbnail: "https://i.ytimg.com/vi/vYw4lkdQgdo/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=vYw4lkdQgdo",
+        releaseDate: "2016-04-24T17:00:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-5",
+        title: "What I Can Do for Now",
+        number: 5,
+        thumbnail: "https://i.ytimg.com/vi/fT9TPs6Q-jQ/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=fT9TPs6Q-jQ",
+        releaseDate: "2016-05-01T17:00:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-6",
+        title: "Rage, You Damn Nerd",
+        number: 6,
+        thumbnail: "https://i.ytimg.com/vi/maTFmiek5ZA/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=maTFmiek5ZA",
+        releaseDate: "2016-05-08T17:00:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-7",
+        title: "Deku vs. Kacchan",
+        number: 7,
+        thumbnail: "https://i.ytimg.com/vi/TjJ3jJ_jE3k/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=TjJ3jJ_jE3k",
+        releaseDate: "2016-05-15T17:00:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-8",
+        title: "Bakugo's Start Line",
+        number: 8,
+        thumbnail: "https://i.ytimg.com/vi/maTFmiek5ZA/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=maTFmiek5ZA",
+        releaseDate: "2016-05-22T17:00:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-9",
+        title: "Yeah, Let's Do Our Best!",
+        number: 9,
+        thumbnail: "https://i.ytimg.com/vi/UmKj4KxSjmk/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=UmKj4KxSjmk",
+        releaseDate: "2016-05-29T17:00:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-10",
+        title: "Encounter with the Unknown",
+        number: 10,
+        thumbnail: "https://i.ytimg.com/vi/TjJ3jJ_jE3k/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=TjJ3jJ_jE3k",
+        releaseDate: "2016-06-05T17:00:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-11",
+        title: "Game Over",
+        number: 11,
+        thumbnail: "https://i.ytimg.com/vi/maTFmiek5ZA/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=maTFmiek5ZA",
+        releaseDate: "2016-06-12T17:00:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-12",
+        title: "All Might",
+        number: 12,
+        thumbnail: "https://i.ytimg.com/vi/UmKj4KxSjmk/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=UmKj4KxSjmk",
+        releaseDate: "2016-06-19T17:00:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkyMzQ2OTg3NjU=-ep-13",
+        title: "In Each of Our Hearts",
+        number: 13,
+        thumbnail: "https://i.ytimg.com/vi/TjJ3jJ_jE3k/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=TjJ3jJ_jE3k",
+        releaseDate: "2016-06-26T17:00:00Z"
+      }
     ],
-    genres: ["Action", "Superhero", "Comedy"],
+    genres: ["Action", "Adventure", "Sci-Fi"],
     status: "ongoing",
     rating: 4.6,
     releaseYear: 2016,
     studio: "Bones"
   },
   {
-    id: "5",
-    title: "One Piece",
-    description: "Follows the adventures of Monkey D. Luffy and his pirate crew in order to find the greatest treasure ever left by the legendary Pirate, Gold Roger.",
-    coverImage: "https://m.media-amazon.com/images/M/MV5BODcwNWE3OTMtMDc3MS00NDFjLWE1OTAtNDU3NjgxODMxY2UyXkEyXkFqcGdeQXVyNTAyODkwOQ@@._V1_.jpg",
-    bannerImage: "https://sportshub.cbsistatic.com/i/2021/03/27/e2a7a31f-2151-442e-a42f-f5158ec2b047/one-piece-1000-luffy-zoro-sanji-1246931.jpg",
+    id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=",
+    title: "One-Punch Man",
+    description: "Saitama, a hero who can defeat any enemy with a single punch, seeks to find a worthy opponent who can give him a challenge.",
+    coverImage: "https://s4.anilist.co/file/anime/cover/large/bx21087-WdQSPyxQ3vpP.jpg",
+    bannerImage: "https://s4.anilist.co/file/anime/banner/21087-5j9otfkoDKXk.jpg",
     episodes: [
       {
-        id: "5-1",
-        title: "I'm Luffy! The Man Who's Gonna Be King of the Pirates!",
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-1",
+        title: "The Strongest Man",
         number: 1,
-        thumbnail: "https://m.media-amazon.com/images/M/MV5BM2QwZDJlZDktMGY5Mi00YmI1LTk0NmQtOTEwZjdjYWZlMGI5XkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg",
+        thumbnail: "https://i.ytimg.com/vi/ROB-iJseJvo/maxresdefault.jpg",
         duration: 24,
-        videoUrl: "https://example.com/op-video1",
-        releaseDate: "1999-10-20"
+        videoUrl: "https://www.youtube.com/watch?v=ROB-iJseJvo",
+        releaseDate: "2015-10-05T01:05:00Z"
       },
       {
-        id: "5-2",
-        title: "Enter the Great Swordsman! Pirate Hunter Roronoa Zoro!",
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-2",
+        title: "The Solitary Cyborg",
         number: 2,
-        thumbnail: "https://www.yualrightboah.com/wp-content/uploads/2022/01/Pirate-Hunter-Roronoa-Zoro.png",
+        thumbnail: "https://i.ytimg.com/vi/ECyBAiLWBWQ/maxresdefault.jpg",
         duration: 24,
-        videoUrl: "https://example.com/op-video2",
-        releaseDate: "1999-10-27"
+        videoUrl: "https://www.youtube.com/watch?v=ECyBAiLWBWQ",
+        releaseDate: "2015-10-12T01:05:00Z"
       },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-3",
+        title: "The Obsessed Scientist",
+        number: 3,
+        thumbnail: "https://i.ytimg.com/vi/M-J2fhWjmdw/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=M-J2fhWjmdw",
+        releaseDate: "2015-10-19T01:05:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-4",
+        title: "The Modern Ninja",
+        number: 4,
+        thumbnail: "https://i.ytimg.com/vi/vrezjE8wdwU/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=vrezjE8wdwU",
+        releaseDate: "2015-10-26T01:05:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-5",
+        title: "The Ultimate Master",
+        number: 5,
+        thumbnail: "https://i.ytimg.com/vi/m1qG8LqG-ic/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=m1qG8LqG-ic",
+        releaseDate: "2015-11-02T01:05:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-6",
+        title: "The Terrifying City",
+        number: 6,
+        thumbnail: "https://i.ytimg.com/vi/a-XyGjPAlj4/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=a-XyGjPAlj4",
+        releaseDate: "2015-11-09T01:05:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-7",
+        title: "The Disciples Arrive",
+        number: 7,
+        thumbnail: "https://i.ytimg.com/vi/2hJROe-ixGY/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=2hJROe-ixGY",
+        releaseDate: "2015-11-16T01:05:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-8",
+        title: "The Deep Sea King",
+        number: 8,
+        thumbnail: "https://i.ytimg.com/vi/l-1myMl-md4/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=l-1myMl-md4",
+        releaseDate: "2015-11-23T01:05:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-9",
+        title: "Unyielding Justice",
+        number: 9,
+        thumbnail: "https://i.ytimg.com/vi/hnz-ihKRhE8/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=hnz-ihKRhE8",
+        releaseDate: "2015-11-30T01:05:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-10",
+        title: "Unparalleled Power",
+        number: 10,
+        thumbnail: "https://i.ytimg.com/vi/QmW_JjQODEE/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=QmW_JjQODEE",
+        releaseDate: "2015-12-07T01:05:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-11",
+        title: "The Dominator of Space",
+        number: 11,
+        thumbnail: "https://i.ytimg.com/vi/Xo9jKmaqJgw/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=Xo9jKmaqJgw",
+        releaseDate: "2015-12-14T01:05:00Z"
+      },
+      {
+        id: "MDEwOlJlcG9zaXRvcnkzMDU0MzI1NDY=-ep-12",
+        title: "The Strongest Hero",
+        number: 12,
+        thumbnail: "https://i.ytimg.com/vi/rmbjE-jze7A/maxresdefault.jpg",
+        duration: 24,
+        videoUrl: "https://www.youtube.com/watch?v=rmbjE-jze7A",
+        releaseDate: "2015-12-21T01:05:00Z"
+      }
     ],
-    genres: ["Action", "Adventure", "Fantasy"],
-    status: "ongoing",
+    genres: ["Action", "Comedy", "Sci-Fi"],
+    status: "completed",
     rating: 4.8,
-    releaseYear: 1999,
-    studio: "Toei Animation"
+    releaseYear: 2015,
+    studio: "Madhouse"
   },
   {
-    id: "6",
-    title: "Chainsaw Man",
-    description: "Following a betrayal, a young man left for the dead is reborn as a powerful devil-human hybrid after merging with his pet devil and is soon enlisted into an organization dedicated to hunting devils.",
-    coverImage: "https://flxt.tmsimg.com/assets/p23019195_b_v13_aa.jpg",
-    bannerImage: "https://i0.wp.com/www.screenspy.com/wp-content/uploads/2022/10/chainsaw-man-e1666118409201.png?fit=2880%2C1463&ssl=1",
+    id: "MDEwOlJlcG9zaXRvcnkzODk0NzE2NzQ=",
+    title: "Hunter x Hunter",
+    description: "Gon Freecss aspires to become a Hunter, an elite class of adventurers who are licensed to track down secret treasures, rare beasts, and even other individuals.",
+    coverImage: "https://s4.anilist.co/file/anime/cover/large/bx11061-tf1PAb5Wj94W.jpg",
+    bannerImage: "https://s4.anilist.co/file/anime/banner/11061-3SrVjRyFHljV.jpg",
     episodes: [
       {
-        id: "6-1",
-        title: "Dog & Chainsaw",
+        id: "MDEwOlJlcG9zaXRvcnkzODk0NzE2NzQ=-ep-1",
+        title: "Departure x and x Friends",
         number: 1,
-        thumbnail: "https://i0.wp.com/anitrendz.net/news/wp-content/uploads/2022/10/chainsawmanepisode1-2.jpg",
-        duration: 25,
-        videoUrl: "https://example.com/csm-video1",
-        releaseDate: "2022-10-11"
+        thumbnail: "https://i.ytimg.com/vi/j2QIHR5cLGQ/maxresdefault.jpg",
+        duration: 23,
+        videoUrl: "https://www.youtube.com/watch?v=j2QIHR5cLGQ",
+        releaseDate: "2011-10-02T10:30:00Z"
       },
       {
-        id: "6-2",
-        title: "Arrival in Tokyo",
-        number: 2,
-        thumbnail: "https://i0.wp.com/www.animegeek.com/wp-content/uploads/2022/10/Chainsaw-Man-Episode-2-Release-Date-Power-the-Blood-Fiend-introduced.jpg?resize=780%2C470&ssl=1",
-        duration: 25,
-        videoUrl: "https://example.com/csm-video2",
-        releaseDate: "2022-10-18"
-      },
-    ],
-    genres: ["Action", "Horror", "Supernatural"],
-    status: "ongoing",
-    rating: 4.7,
-    releaseYear: 2022,
-    studio: "MAPPA"
-  }
-];
-
-// Load data from localStorage or use defaults
-export let animeData: Anime[] = getInitialAnimeData();
-export let users: User[] = getInitialUsers();
-export let payments: PaymentStatus[] = getInitialPayments();
-
-// Initialize premium plans in localStorage
-const initializePremiumPlans = () => {
-  const storedPlans = localStorage.getItem(PREMIUM_PLANS_KEY);
-  if (!storedPlans) {
-    localStorage.setItem(PREMIUM_PLANS_KEY, JSON.stringify(premiumPlans));
-  }
-};
-initializePremiumPlans();
-
-// Save data to localStorage
-const saveAnimeData = () => {
-  localStorage.setItem(ANIME_DATA_KEY, JSON.stringify(animeData));
-};
-
-const saveUsers = () => {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-};
-
-const savePayments = () => {
-  localStorage.setItem(PAYMENTS_KEY, JSON.stringify(payments));
-};
-
-// CRUD operations for anime
-export const getAnimeById = (id: string): Anime | undefined => {
-  return animeData.find(anime => anime.id === id);
-};
-
-export const addAnime = (anime: Anime): Anime => {
-  // Generate an ID if not provided
-  if (!anime.id) {
-    anime.id = Date.now().toString();
-  }
-  animeData = [...animeData, anime];
-  saveAnimeData();
-  return anime;
-};
-
-export const updateAnime = (updatedAnime: Anime): Anime | null => {
-  const index = animeData.findIndex(anime => anime.id === updatedAnime.id);
-  if (index === -1) return null;
-  
-  animeData[index] = updatedAnime;
-  saveAnimeData();
-  return updatedAnime;
-};
-
-export const deleteAnime = (id: string): boolean => {
-  const initialLength = animeData.length;
-  animeData = animeData.filter(anime => anime.id !== id);
-  
-  if (animeData.length !== initialLength) {
-    saveAnimeData();
-    return true;
-  }
-  return false;
-};
-
-// User operations
-export const getUserById = (id: string): User | undefined => {
-  return users.find(user => user.id === id);
-};
-
-export const getUserByEmail = (email: string): User | undefined => {
-  return users.find(user => user.email === email);
-};
-
-export const updateUser = (updatedUser: User): User | null => {
-  const index = users.findIndex(user => user.id === updatedUser.id);
-  if (index === -1) return null;
-  
-  users[index] = updatedUser;
-  saveUsers();
-  return updatedUser;
-};
-
-// Premium plan operations
-export const getPremiumPlans = (): PremiumPlan[] => {
-  const storedPlans = localStorage.getItem(PREMIUM_PLANS_KEY);
-  if (storedPlans) {
-    return JSON.parse(storedPlans);
-  }
-  return premiumPlans;
-};
-
-export const getPlanById = (id: string): PremiumPlan | undefined => {
-  const plans = getPremiumPlans();
-  return plans.find(plan => plan.id === id);
-};
-
-// Payment operations
-export const createPayment = (userId: string, planId: string, amount: number): PaymentStatus => {
-  const payment: PaymentStatus = {
-    id: `payment_${Date.now()}`,
-    userId,
-    planId,
-    status: "pending",
-    amount,
-    paymentDate: new Date().toISOString(),
-    paymentMethod: "PhonePe"
-  };
-  
-  payments = [...payments, payment];
-  savePayments();
-  return payment;
-};
-
-export const updatePaymentStatus = (paymentId: string, status: "pending" | "completed" | "failed"): PaymentStatus | null => {
-  const index = payments.findIndex(payment => payment.id === paymentId);
-  if (index === -1) return null;
-  
-  payments[index] = { ...payments[index], status };
-  savePayments();
-  
-  // If payment is completed, update user subscription
-  if (status === "completed") {
-    const payment = payments[index];
-    const user = getUserById(payment.userId);
-    const plan = getPlanById(payment.planId);
-    
-    if (user && plan) {
-      const subscriptionEndDate = new Date();
-      subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + plan.duration);
-      
-      updateUser({
-        ...user,
-        premium: true,
-        subscriptionStatus: "active",
-        subscriptionEndDate: subscriptionEndDate.toISOString()
-      });
-    }
-  }
-  
-  return payments[index];
-};
-
-export const getPaymentById = (id: string): PaymentStatus | undefined => {
-  return payments.find(payment => payment.id === id);
-};
-
-export const getPaymentsByUserId = (userId: string): PaymentStatus[] => {
-  return payments.filter(payment => payment.userId === userId);
-};
-
-// Existing utility functions
-export const getRecentAnime = (): Anime[] => {
-  return [...animeData].sort((a, b) => {
-    const latestEpisodeA = a.episodes.length > 0 ? 
-      new Date(a.episodes[a.episodes.length - 1].releaseDate).getTime() : 0;
-    const latestEpisodeB = b.episodes.length > 0 ? 
-      new Date(b.episodes[b.episodes.length - 1].releaseDate).getTime() : 0;
-    return latestEpisodeB - latestEpisodeA;
-  }).slice(0, 4);
-};
-
-export const getTrendingAnime = (): Anime[] => {
-  return [...animeData].sort((a, b) => b.rating - a.rating).slice(0, 4);
-};
-
-export const getAnimeByGenre = (genre: string): Anime[] => {
-  return animeData.filter(anime => anime.genres.includes(genre));
-};
-
-export const getAllGenres = (): string[] => {
-  const genres = new Set<string>();
-  animeData.forEach(anime => {
-    anime.genres.forEach(genre => genres.add(genre));
-  });
-  return Array.from(genres).sort();
-};
-
-export const searchAnime = (query: string): Anime[] => {
-  if (!query || query.trim() === '') return [];
-  
-  const normalizedQuery = query.toLowerCase().trim();
-  return animeData.filter(anime => 
-    anime.title.toLowerCase().includes(normalizedQuery) || 
-    anime.description.toLowerCase().includes(normalizedQuery) ||
-    anime.genres.some(genre => genre.toLowerCase().includes(normalizedQuery)) ||
-    anime.studio.toLowerCase().includes(normalizedQuery)
-  );
-};
-
-// Add this function to ensure the anime update is working properly
-export const findAnimeById = (id: string): Anime | undefined => {
-  return animeData.find(anime => anime.id === id);
-};
+        id: "
