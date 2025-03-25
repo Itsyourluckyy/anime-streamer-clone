@@ -27,9 +27,9 @@ const VideoUpload = ({ onUploadComplete }: VideoUploadProps) => {
         return;
       }
       
-      // Check if file size is less than 100MB
-      if (selectedFile.size > 100 * 1024 * 1024) {
-        toast.error("File size should be less than 100MB");
+      // Check if file size is less than 2GB (2 * 1024 * 1024 * 1024 bytes)
+      if (selectedFile.size > 2 * 1024 * 1024 * 1024) {
+        toast.error("File size should be less than 2GB");
         return;
       }
       
@@ -63,16 +63,18 @@ const VideoUpload = ({ onUploadComplete }: VideoUploadProps) => {
       const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
       const filePath = `${fileName}`;
 
+      // Create a function to update progress
+      const updateProgress = (progress: { loaded: number; total: number }) => {
+        const percent = (progress.loaded / progress.total) * 100;
+        setProgress(percent);
+      };
+
       // Upload file to Supabase Storage
       const { data, error } = await supabase.storage
         .from('videos')
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: false,
-          onUploadProgress: (progress) => {
-            const percent = (progress.loaded / progress.total) * 100;
-            setProgress(percent);
-          },
+          upsert: false
         });
 
       if (error) {
@@ -103,6 +105,21 @@ const VideoUpload = ({ onUploadComplete }: VideoUploadProps) => {
       setTitle("");
       setProgress(0);
     }
+  };
+
+  // Manual progress update function since we can't use onUploadProgress with Supabase storage
+  const simulateProgress = () => {
+    let currentProgress = 0;
+    const interval = setInterval(() => {
+      currentProgress += Math.random() * 10;
+      if (currentProgress > 95) {
+        currentProgress = 95;
+        clearInterval(interval);
+      }
+      setProgress(currentProgress);
+    }, 500);
+
+    return () => clearInterval(interval);
   };
 
   return (
@@ -137,7 +154,11 @@ const VideoUpload = ({ onUploadComplete }: VideoUploadProps) => {
           </Button>
           
           <Button 
-            onClick={handleUpload} 
+            onClick={() => {
+              handleUpload();
+              // Start simulating progress when uploading
+              if (file) simulateProgress();
+            }} 
             disabled={!file || uploading} 
             className="bg-orange-600 hover:bg-orange-700 w-full"
           >
