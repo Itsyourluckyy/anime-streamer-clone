@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -22,7 +21,6 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 
-// Form schema
 const paymentFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address."),
@@ -57,7 +55,6 @@ const PaymentPage = () => {
   const onSubmit = (data: PaymentFormValues) => {
     setIsSubmitting(true);
     
-    // Create a new payment
     const payment = createPayment({
       id: `payment-${uuidv4().slice(0, 8)}`,
       userId: `user-${uuidv4().slice(0, 8)}`,
@@ -68,7 +65,6 @@ const PaymentPage = () => {
       paymentMethod: data.paymentMethod,
     });
     
-    // Simulate payment processing
     setTimeout(() => {
       setIsSubmitting(false);
       
@@ -77,7 +73,6 @@ const PaymentPage = () => {
         description: "Your payment is being processed. You will be redirected shortly.",
       });
       
-      // Redirect to confirmation page
       navigate(`/payment/confirmation/${payment.id}`);
     }, 2000);
   };
@@ -111,7 +106,6 @@ const PaymentPage = () => {
       <main className="flex-grow py-16">
         <div className="container max-w-5xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Plan Summary */}
             <Card>
               <CardHeader>
                 <CardTitle>Order Summary</CardTitle>
@@ -144,7 +138,6 @@ const PaymentPage = () => {
               </CardContent>
             </Card>
             
-            {/* Payment Form */}
             <Card>
               <CardHeader>
                 <CardTitle>Payment Details</CardTitle>
