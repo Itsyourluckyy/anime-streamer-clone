@@ -7,7 +7,8 @@ import AnimeSection from "@/components/anime/AnimeSection";
 import { getTrendingAnime, getRecentAnime, getAnimeByGenre, animeData } from "@/services/animeData";
 
 const Index = () => {
-  const featuredAnime = animeData[0]; // Demon Slayer is our featured anime
+  // Use a fallback in case the first anime isn't available
+  const featuredAnime = animeData && animeData.length > 0 ? animeData[0] : null;
   const trendingAnime = getTrendingAnime();
   const newReleases = getRecentAnime();
   const actionAnime = getAnimeByGenre("Action");
@@ -24,7 +25,7 @@ const Index = () => {
       
       {/* Hero Section */}
       <section className="relative">
-        <AnimeHero anime={featuredAnime} />
+        {featuredAnime && <AnimeHero anime={featuredAnime} />}
       </section>
       
       {/* Main Content */}

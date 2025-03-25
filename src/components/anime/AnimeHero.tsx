@@ -13,6 +13,18 @@ interface AnimeHeroProps {
 const AnimeHero = ({ anime }: AnimeHeroProps) => {
   const navigate = useNavigate();
 
+  // Add null/undefined check to prevent errors
+  if (!anime) {
+    return (
+      <div className="relative w-full h-[80vh] bg-gray-900 flex items-center justify-center">
+        <div className="text-center text-gray-400">
+          <h2 className="text-2xl font-bold mb-4">Anime data not available</h2>
+          <p>Please try again later</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleWatchNow = () => {
     navigate(`/anime/${anime.id}/watch/1`);
   };
