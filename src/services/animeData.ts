@@ -625,6 +625,42 @@ let payments: PaymentStatus[] = [
 // Get all anime
 export { animeData, premiumPlans, payments };
 
+// Get all premium plans
+export const getPremiumPlans = (): PremiumPlan[] => {
+  return premiumPlans;
+};
+
+// Get trending anime (top rated)
+export const getTrendingAnime = (): Anime[] => {
+  return [...animeData]
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 5);
+};
+
+// Get recent anime (newest episodes)
+export const getRecentAnime = (): Anime[] => {
+  // In a real app, this would sort by the most recently released episode
+  return [...animeData].sort(() => Math.random() - 0.5).slice(0, 5);
+};
+
+// Get anime by genre
+export const getAnimeByGenre = (genre: string): Anime[] => {
+  return animeData.filter(anime => 
+    anime.genres.includes(genre)
+  ).slice(0, 5);
+};
+
+// Search for anime
+export const searchAnime = (query: string): Anime[] => {
+  const lowercaseQuery = query.toLowerCase();
+  
+  return animeData.filter(anime => 
+    anime.title.toLowerCase().includes(lowercaseQuery) ||
+    anime.description.toLowerCase().includes(lowercaseQuery) ||
+    anime.genres.some(genre => genre.toLowerCase().includes(lowercaseQuery))
+  );
+};
+
 // Get anime by ID
 export const getAnimeById = (id: string): Anime | undefined => {
   return animeData.find(anime => anime.id === id);
@@ -688,6 +724,11 @@ export const getEpisodeByNumber = (animeId: string, episodeNumber: number): Epis
   if (!anime) return undefined;
   
   return anime.episodes.find(episode => episode.number === episodeNumber);
+};
+
+// Get payment by ID
+export const getPaymentById = (paymentId: string): PaymentStatus | undefined => {
+  return payments.find(payment => payment.id === paymentId);
 };
 
 // Update payment status

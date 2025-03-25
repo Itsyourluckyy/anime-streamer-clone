@@ -1,179 +1,284 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { v4 as uuidv4 } from "uuid";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { getPlanById, createPayment } from "@/services/animeData";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { createPayment, getPlanById } from "@/services/animeData";
-import { PremiumPlan } from "@/types";
-import { toast } from "sonner";
-import { ArrowLeft, CheckCircle, DollarSign } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useToast } from "@/hooks/use-toast";
 
-const PaymentPage: React.FC = () => {
-  const { planId } = useParams<{ planId: string }>();
+// Form schema
+const paymentFormSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters."),
+  email: z.string().email("Please enter a valid email address."),
+  cardNumber: z.string().regex(/^\d{16}$/, "Card number must be 16 digits."),
+  expiryDate: z.string().regex(/^\d{2}\/\d{2}$/, "Expiry date must be in MM/YY format."),
+  cvv: z.string().regex(/^\d{3}$/, "CVV must be 3 digits."),
+  paymentMethod: z.enum(["Credit Card", "Debit Card"]),
+});
+
+type PaymentFormValues = z.infer<typeof paymentFormSchema>;
+
+const PaymentPage = () => {
+  const { planId } = useParams();
   const navigate = useNavigate();
-  const [plan, setPlan] = useState<PremiumPlan | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [paymentInitiated, setPaymentInitiated] = useState(false);
-  const [paymentId, setPaymentId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (planId) {
-      const selectedPlan = getPlanById(planId);
-      if (selectedPlan) {
-        setPlan(selectedPlan);
-      } else {
-        toast.error("Invalid plan selected");
-        navigate("/premium");
-      }
-    }
-    setIsLoading(false);
-  }, [planId, navigate]);
-
-  const handleInitiatePayment = () => {
-    if (!plan) return;
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const plan = planId ? getPlanById(planId) : undefined;
+  
+  const form = useForm<PaymentFormValues>({
+    resolver: zodResolver(paymentFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      cardNumber: "",
+      expiryDate: "",
+      cvv: "",
+      paymentMethod: "Credit Card",
+    },
+  });
+  
+  const onSubmit = (data: PaymentFormValues) => {
+    setIsSubmitting(true);
     
-    // In a real app, we would authenticate the user first
-    // Here we just use a mock user ID
-    const userId = "user_" + Date.now().toString();
+    // Create a new payment
+    const payment = createPayment({
+      id: `payment-${uuidv4().slice(0, 8)}`,
+      userId: `user-${uuidv4().slice(0, 8)}`,
+      planId: planId || "",
+      amount: plan?.price || 0,
+      paymentDate: new Date().toISOString(),
+      status: "pending",
+      paymentMethod: data.paymentMethod,
+    });
     
-    const payment = createPayment(userId, plan.id, plan.price);
-    setPaymentId(payment.id);
-    setPaymentInitiated(true);
-    
-    toast.success("Payment initiated. Scan the QR code to pay");
+    // Simulate payment processing
+    setTimeout(() => {
+      setIsSubmitting(false);
+      
+      toast({
+        title: "Payment Processing",
+        description: "Your payment is being processed. You will be redirected shortly.",
+      });
+      
+      // Redirect to confirmation page
+      navigate(`/payment/confirmation/${payment.id}`);
+    }, 2000);
   };
-
-  const handleConfirmPayment = () => {
-    if (paymentId) {
-      navigate(`/payment/confirmation/${paymentId}`);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-600"></div>
-      </div>
-    );
-  }
-
+  
   if (!plan) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20">
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-3xl font-bold mb-4">Plan not found</h1>
-          <p className="mb-8">The selected plan could not be found.</p>
-          <Button onClick={() => navigate("/premium")}>
-            Go Back to Plans
-          </Button>
-        </div>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="text-center">Plan Not Found</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-center">Sorry, the selected plan was not found.</p>
+            </CardContent>
+            <CardFooter className="flex justify-center">
+              <Button onClick={() => navigate("/premium")}>View Available Plans</Button>
+            </CardFooter>
+          </Card>
+        </main>
+        <Footer />
       </div>
     );
   }
-
+  
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-
-      <main className="container mx-auto px-4 py-16 pt-32 max-w-4xl">
-        <Button 
-          variant="ghost" 
-          className="mb-8"
-          onClick={() => navigate("/premium")}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Plans
-        </Button>
-
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="bg-orange-600 text-white p-6">
-            <h1 className="text-2xl font-bold">Complete Your Payment</h1>
-            <p className="opacity-90">You're just one step away from premium anime content</p>
-          </div>
-          
-          <div className="p-8">
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h2 className="text-xl font-semibold mb-4">Payment Summary</h2>
+      
+      <main className="flex-grow py-16">
+        <div className="container max-w-5xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Plan Summary */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Order Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-lg">{plan.name}</h3>
+                  <p className="text-muted-foreground">{plan.duration} days subscription</p>
+                </div>
                 
-                <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                  <div className="flex justify-between mb-2">
-                    <span className="text-gray-600">Plan</span>
-                    <span className="font-medium">{plan.name}</span>
+                <div className="space-y-2">
+                  <p className="font-medium">Features:</p>
+                  <ul className="space-y-1 pl-5 list-disc">
+                    {plan.features.map((feature, index) => (
+                      <li key={index}>{feature}</li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="pt-4 border-t">
+                  <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span>₹{(plan.price / 100).toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-gray-600">Duration</span>
-                    <span className="font-medium">{plan.duration} month{plan.duration > 1 ? 's' : ''}</span>
-                  </div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-gray-600">Amount</span>
-                    <span className="font-medium">₹{plan.price}</span>
-                  </div>
-                  <div className="border-t border-gray-200 my-2"></div>
-                  <div className="flex justify-between font-bold text-lg">
+                  <div className="flex justify-between font-semibold text-lg mt-4">
                     <span>Total</span>
-                    <span>₹{plan.price}</span>
+                    <span>₹{(plan.price / 100).toFixed(2)}</span>
                   </div>
                 </div>
-                
-                <div className="space-y-4">
-                  {!paymentInitiated ? (
-                    <Button 
-                      onClick={handleInitiatePayment}
-                      className="w-full bg-orange-600 hover:bg-orange-700"
-                      size="lg"
-                    >
-                      <DollarSign className="h-5 w-5 mr-2" />
-                      Pay Now
-                    </Button>
-                  ) : (
-                    <Button 
-                      onClick={handleConfirmPayment}
-                      className="w-full bg-green-600 hover:bg-green-700"
-                      size="lg"
-                    >
-                      <CheckCircle className="h-5 w-5 mr-2" />
-                      I've Completed Payment
-                    </Button>
-                  )}
-                  
-                  <p className="text-sm text-gray-500 text-center">
-                    By proceeding with the payment, you agree to our Terms of Service and Privacy Policy.
-                  </p>
-                </div>
-              </div>
-              
-              <div className={`${!paymentInitiated ? 'opacity-50' : ''} transition-opacity duration-300`}>
-                <h2 className="text-xl font-semibold mb-4 text-center">Scan QR Code to Pay</h2>
-                
-                <div className="bg-white p-6 rounded-lg border-2 border-gray-200 flex flex-col items-center">
-                  <div className="w-full max-w-[250px] mx-auto">
-                    <img 
-                      src="/lovable-uploads/c5808b16-a107-4ad6-97bf-87febcd4776f.png" 
-                      alt="PhonePe Payment QR Code" 
-                      className="w-full h-auto"
+              </CardContent>
+            </Card>
+            
+            {/* Payment Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Payment Details</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name on Card</FormLabel>
+                          <FormControl>
+                            <Input placeholder="John Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
-                  
-                  <div className="text-center mt-4 space-y-1">
-                    <p className="font-semibold text-lg">Scan & Pay Using PhonePe App</p>
-                    <p className="text-gray-600 text-sm">Shivraj Singh</p>
-                  </div>
-                </div>
-                
-                <div className="mt-4 text-center text-sm text-gray-500">
-                  {paymentInitiated ? (
-                    <p>After completing payment, click "I've Completed Payment" button to verify.</p>
-                  ) : (
-                    <p>Click "Pay Now" to initiate payment process</p>
-                  )}
-                </div>
-              </div>
-            </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="john@example.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="paymentMethod"
+                      render={({ field }) => (
+                        <FormItem className="space-y-3">
+                          <FormLabel>Payment Method</FormLabel>
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              className="flex space-x-4"
+                            >
+                              <FormItem className="flex items-center space-x-2">
+                                <FormControl>
+                                  <RadioGroupItem value="Credit Card" />
+                                </FormControl>
+                                <FormLabel className="font-normal cursor-pointer">
+                                  Credit Card
+                                </FormLabel>
+                              </FormItem>
+                              
+                              <FormItem className="flex items-center space-x-2">
+                                <FormControl>
+                                  <RadioGroupItem value="Debit Card" />
+                                </FormControl>
+                                <FormLabel className="font-normal cursor-pointer">
+                                  Debit Card
+                                </FormLabel>
+                              </FormItem>
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="cardNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Card Number</FormLabel>
+                          <FormControl>
+                            <Input placeholder="1234 5678 9012 3456" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="expiryDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Expiry Date</FormLabel>
+                            <FormControl>
+                              <Input placeholder="MM/YY" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="cvv"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>CVV</FormLabel>
+                            <FormControl>
+                              <Input type="password" placeholder="•••" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Processing..." : `Pay ₹${(plan.price / 100).toFixed(2)}`}
+                    </Button>
+                    
+                    <p className="text-sm text-muted-foreground text-center mt-4">
+                      Your payment information is secure. We use industry-standard encryption to protect your data.
+                    </p>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
-
+      
       <Footer />
     </div>
   );
