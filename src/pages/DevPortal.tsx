@@ -461,13 +461,11 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
   const [newGenre, setNewGenre] = useState("");
   const allGenres = getAllGenres();
   
-  // Refs for file inputs
   const coverImageRef = useRef<HTMLInputElement>(null);
   const bannerImageRef = useRef<HTMLInputElement>(null);
   const episodeThumbnailRef = useRef<HTMLInputElement>(null);
   const episodeVideoRef = useRef<HTMLInputElement>(null);
   
-  // Preview states
   const [coverImagePreview, setCoverImagePreview] = useState<string>(anime?.coverImage || "");
   const [bannerImagePreview, setBannerImagePreview] = useState<string>(anime?.bannerImage || "");
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
@@ -489,7 +487,6 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
     }
   });
 
-  // Handle file uploads - this is a simple mock since we don't have real backend
   const handleFileUpload = (
     file: File, 
     setPreview: (url: string) => void, 
@@ -499,14 +496,10 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
     if (!file) return;
     
     setUploading(true);
-    // Create a temporary preview URL
     const objectUrl = URL.createObjectURL(file);
     setPreview(objectUrl);
     
-    // Mock upload delay
     setTimeout(() => {
-      // In a real app, you would upload to a server and get a URL back
-      // Here we just use the object URL as the "uploaded" URL
       setUrl(objectUrl);
       setUploading(false);
       toast.success("File uploaded successfully");
@@ -996,4 +989,83 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
                           value={newEpisode.thumbnail} 
                           placeholder="Or enter thumbnail URL"
                           onChange={(e) => {
-                            setNewEpisode({...newEpisode, thumbnail: e.target
+                            setNewEpisode({...newEpisode, thumbnail: e.target.value});
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-sm font-medium">Video URL / File</label>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      className="flex items-center gap-2"
+                      onClick={() => episodeVideoRef.current?.click()}
+                      disabled={uploadingVideo}
+                    >
+                      {uploadingVideo ? (
+                        <span className="animate-pulse">Uploading...</span>
+                      ) : (
+                        <>
+                          <Upload className="h-4 w-4" />
+                          Upload Video
+                        </>
+                      )}
+                    </Button>
+                    <input 
+                      type="file"
+                      ref={episodeVideoRef}
+                      className="hidden"
+                      accept="video/*"
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          setUploadingVideo(true);
+                          const videoUrl = URL.createObjectURL(e.target.files[0]);
+                          
+                          setTimeout(() => {
+                            setNewEpisode({...newEpisode, videoUrl: videoUrl});
+                            setUploadingVideo(false);
+                            toast.success("Video uploaded successfully");
+                          }, 2000);
+                        }
+                      }}
+                    />
+                    <div className="relative flex-1">
+                      <Input 
+                        value={newEpisode.videoUrl} 
+                        placeholder="Or enter video URL"
+                        onChange={(e) => setNewEpisode({...newEpisode, videoUrl: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end mt-4">
+                <Button 
+                  type="button" 
+                  onClick={addEpisode}
+                  className="bg-orange-600 hover:bg-orange-700"
+                >
+                  <Plus className="mr-1 h-4 w-4" />
+                  Add Episode
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-6 border-t border-gray-200">
+          <Button type="submit" className="bg-orange-600 hover:bg-orange-700">
+            {anime ? 'Update Anime' : 'Add Anime'}
+          </Button>
+        </div>
+      </form>
+    </FormProvider>
+  );
+};
+
+export default DevPortal;
