@@ -535,306 +535,307 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div>
-          <FormField
-            control={form.control}
-            name="coverImage"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cover Image URL</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div>
-          <FormField
-            control={form.control}
-            name="bannerImage"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Banner Image URL (Optional)</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div>
-          <FormField
-            control={form.control}
-            name="studio"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Studio</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div>
-          <FormField
-            control={form.control}
-            name="releaseYear"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Release Year</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    min="1950" 
-                    max={new Date().getFullYear()} 
-                    {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div>
-          <FormField
-            control={form.control}
-            name="rating"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Rating (1-5)</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    min="1" 
-                    max="5" 
-                    step="0.1" 
-                    {...field}
-                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div>
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Status</FormLabel>
-                <Select 
-                  value={field.value} 
-                  onValueChange={field.onChange}
-                >
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
+                    <Input {...field} />
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="ongoing">Ongoing</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div>
+            <FormField
+              control={form.control}
+              name="coverImage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cover Image URL</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div>
+            <FormField
+              control={form.control}
+              name="bannerImage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Banner Image URL (Optional)</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div>
+            <FormField
+              control={form.control}
+              name="studio"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Studio</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div>
+            <FormField
+              control={form.control}
+              name="releaseYear"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Release Year</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      min="1950" 
+                      max={new Date().getFullYear()} 
+                      {...field}
+                      onChange={(e) => field.onChange(parseInt(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div>
+            <FormField
+              control={form.control}
+              name="rating"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Rating (1-5)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      min="1" 
+                      max="5" 
+                      step="0.1" 
+                      {...field}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div>
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <Select 
+                    value={field.value} 
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="ongoing">Ongoing</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        <div>
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    rows={4} 
+                    className="resize-none" 
+                    {...field} 
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
-      </div>
 
-      <div>
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea 
-                  rows={4} 
-                  className="resize-none" 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-lg font-medium mb-2">Genres</h3>
-          <div className="flex flex-wrap gap-2 mb-3">
-            {selectedGenres.map((genre) => (
-              <div 
-                key={genre} 
-                className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm flex items-center"
-              >
-                {genre}
-                <button 
-                  type="button" 
-                  onClick={() => removeGenre(genre)}
-                  className="ml-2 text-orange-600 hover:text-orange-800"
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-lg font-medium mb-2">Genres</h3>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {selectedGenres.map((genre) => (
+                <div 
+                  key={genre} 
+                  className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm flex items-center"
                 >
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            ))}
-            {selectedGenres.length === 0 && (
-              <p className="text-gray-500 text-sm">No genres selected</p>
-            )}
-          </div>
-          <div className="flex space-x-2">
-            <Select 
-              value={newGenre} 
-              onValueChange={setNewGenre}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a genre" />
-              </SelectTrigger>
-              <SelectContent>
-                {allGenres.map((genre) => (
-                  <SelectItem key={genre} value={genre}>
-                    {genre}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button 
-              type="button" 
-              onClick={addGenre} 
-              variant="outline"
-            >
-              Add
-            </Button>
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-lg font-medium mb-2">Episodes</h3>
-          {episodes.length > 0 ? (
-            <div className="space-y-4 mb-4">
-              {episodes.map((episode, index) => (
-                <div key={index} className="flex items-center space-x-2 p-3 border rounded-md bg-gray-50">
-                  <div className="flex-1">
-                    <p className="font-medium">{episode.number}. {episode.title}</p>
-                    <p className="text-sm text-gray-500">Duration: {episode.duration} min</p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeEpisode(index)}
-                    className="text-red-600"
+                  {genre}
+                  <button 
+                    type="button" 
+                    onClick={() => removeGenre(genre)}
+                    className="ml-2 text-orange-600 hover:text-orange-800"
                   >
-                    <Trash className="h-4 w-4" />
-                  </Button>
+                    <X className="h-3 w-3" />
+                  </button>
                 </div>
               ))}
+              {selectedGenres.length === 0 && (
+                <p className="text-gray-500 text-sm">No genres selected</p>
+              )}
             </div>
-          ) : (
-            <p className="text-gray-500 text-sm mb-4">No episodes added</p>
-          )}
+            <div className="flex space-x-2">
+              <Select 
+                value={newGenre} 
+                onValueChange={setNewGenre}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a genre" />
+                </SelectTrigger>
+                <SelectContent>
+                  {allGenres.map((genre) => (
+                    <SelectItem key={genre} value={genre}>
+                      {genre}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button 
+                type="button" 
+                onClick={addGenre} 
+                variant="outline"
+              >
+                Add
+              </Button>
+            </div>
+          </div>
 
-          <div className="space-y-4 border p-4 rounded-md">
-            <h4 className="font-medium">Add New Episode</h4>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">Title</label>
-                <Input 
-                  value={newEpisode.title} 
-                  onChange={(e) => setNewEpisode({...newEpisode, title: e.target.value})}
-                />
+          <div>
+            <h3 className="text-lg font-medium mb-2">Episodes</h3>
+            {episodes.length > 0 ? (
+              <div className="space-y-4 mb-4">
+                {episodes.map((episode, index) => (
+                  <div key={index} className="flex items-center space-x-2 p-3 border rounded-md bg-gray-50">
+                    <div className="flex-1">
+                      <p className="font-medium">{episode.number}. {episode.title}</p>
+                      <p className="text-sm text-gray-500">Duration: {episode.duration} min</p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeEpisode(index)}
+                      className="text-red-600"
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
               </div>
-              <div>
-                <label className="text-sm font-medium">Episode Number</label>
-                <Input 
-                  type="number"
-                  value={newEpisode.number} 
-                  onChange={(e) => setNewEpisode({...newEpisode, number: parseInt(e.target.value)})}
-                />
+            ) : (
+              <p className="text-gray-500 text-sm mb-4">No episodes added</p>
+            )}
+
+            <div className="space-y-4 border p-4 rounded-md">
+              <h4 className="font-medium">Add New Episode</h4>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Title</label>
+                  <Input 
+                    value={newEpisode.title} 
+                    onChange={(e) => setNewEpisode({...newEpisode, title: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Episode Number</label>
+                  <Input 
+                    type="number"
+                    value={newEpisode.number} 
+                    onChange={(e) => setNewEpisode({...newEpisode, number: parseInt(e.target.value)})}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Duration (minutes)</label>
+                  <Input 
+                    type="number"
+                    value={newEpisode.duration} 
+                    onChange={(e) => setNewEpisode({...newEpisode, duration: parseInt(e.target.value)})}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Release Date</label>
+                  <Input 
+                    type="date"
+                    value={newEpisode.releaseDate} 
+                    onChange={(e) => setNewEpisode({...newEpisode, releaseDate: e.target.value})}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-sm font-medium">Thumbnail URL</label>
+                  <Input 
+                    value={newEpisode.thumbnail} 
+                    onChange={(e) => setNewEpisode({...newEpisode, thumbnail: e.target.value})}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-sm font-medium">Video URL</label>
+                  <Input 
+                    value={newEpisode.videoUrl} 
+                    onChange={(e) => setNewEpisode({...newEpisode, videoUrl: e.target.value})}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium">Duration (minutes)</label>
-                <Input 
-                  type="number"
-                  value={newEpisode.duration} 
-                  onChange={(e) => setNewEpisode({...newEpisode, duration: parseInt(e.target.value)})}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Release Date</label>
-                <Input 
-                  type="date"
-                  value={newEpisode.releaseDate} 
-                  onChange={(e) => setNewEpisode({...newEpisode, releaseDate: e.target.value})}
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="text-sm font-medium">Thumbnail URL</label>
-                <Input 
-                  value={newEpisode.thumbnail} 
-                  onChange={(e) => setNewEpisode({...newEpisode, thumbnail: e.target.value})}
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="text-sm font-medium">Video URL</label>
-                <Input 
-                  value={newEpisode.videoUrl} 
-                  onChange={(e) => setNewEpisode({...newEpisode, videoUrl: e.target.value})}
-                />
-              </div>
+              
+              <Button 
+                type="button" 
+                onClick={addEpisode} 
+                variant="outline"
+                className="w-full"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Episode
+              </Button>
             </div>
-            
-            <Button 
-              type="button" 
-              onClick={addEpisode} 
-              variant="outline"
-              className="w-full"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Episode
-            </Button>
           </div>
         </div>
-      </div>
 
-      <DialogFooter>
-        <Button type="submit" className="bg-orange-600 hover:bg-orange-700">
-          {anime ? 'Update Anime' : 'Add Anime'}
-        </Button>
-      </DialogFooter>
-    </form>
+        <DialogFooter>
+          <Button type="submit" className="bg-orange-600 hover:bg-orange-700">
+            {anime ? 'Update Anime' : 'Add Anime'}
+          </Button>
+        </DialogFooter>
+      </form>
+    </Form>
   );
 };
 
 export default DevPortal;
-
