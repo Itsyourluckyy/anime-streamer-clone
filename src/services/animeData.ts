@@ -510,6 +510,5 @@ let animeData: Anime[] = [
         duration: 23,
         videoUrl: "https://www.youtube.com/watch?v=j2QIHR5cLGQ",
         releaseDate: "2011-10-02T10:30:00Z"
-      },
-      {
-        id: "
+      }
+    ],
