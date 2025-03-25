@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -55,8 +55,8 @@ import {
   updatePaymentStatus
 } from "@/services/animeData";
 import { Anime, Episode, PaymentStatus } from "@/types";
-import { Plus, Trash, Edit, Check, X, Search, DollarSign } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { Plus, Trash, Edit, Check, X, Search, DollarSign, Image, Upload } from "lucide-react";
+import { useForm, FormProvider } from "react-hook-form";
 
 const DEV_EMAIL = "itsyourluckyy@gmail.com";
 const DEV_PASSWORD = "mlpnkobj";
@@ -460,6 +460,21 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
   const [selectedGenres, setSelectedGenres] = useState<string[]>(anime?.genres || []);
   const [newGenre, setNewGenre] = useState("");
   const allGenres = getAllGenres();
+  
+  // Refs for file inputs
+  const coverImageRef = useRef<HTMLInputElement>(null);
+  const bannerImageRef = useRef<HTMLInputElement>(null);
+  const episodeThumbnailRef = useRef<HTMLInputElement>(null);
+  const episodeVideoRef = useRef<HTMLInputElement>(null);
+  
+  // Preview states
+  const [coverImagePreview, setCoverImagePreview] = useState<string>(anime?.coverImage || "");
+  const [bannerImagePreview, setBannerImagePreview] = useState<string>(anime?.bannerImage || "");
+  const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
 
   const form = useForm<Partial<Anime>>({
     defaultValues: anime || {
@@ -474,13 +489,37 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
     }
   });
 
+  // Handle file uploads - this is a simple mock since we don't have real backend
+  const handleFileUpload = (
+    file: File, 
+    setPreview: (url: string) => void, 
+    setUploading: (state: boolean) => void,
+    setUrl: (url: string) => void
+  ) => {
+    if (!file) return;
+    
+    setUploading(true);
+    // Create a temporary preview URL
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
+    
+    // Mock upload delay
+    setTimeout(() => {
+      // In a real app, you would upload to a server and get a URL back
+      // Here we just use the object URL as the "uploaded" URL
+      setUrl(objectUrl);
+      setUploading(false);
+      toast.success("File uploaded successfully");
+    }, 1500);
+  };
+
   const handleSubmit = (data: Partial<Anime>) => {
     const newAnime: Anime = {
       id: anime?.id || Date.now().toString(),
       title: data.title || "",
       description: data.description || "",
-      coverImage: data.coverImage || "",
-      bannerImage: data.bannerImage || "",
+      coverImage: data.coverImage || coverImagePreview,
+      bannerImage: data.bannerImage || bannerImagePreview,
       episodes: episodes,
       genres: selectedGenres,
       status: data.status as "ongoing" | "completed",
@@ -493,7 +532,7 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
   };
 
   const addEpisode = () => {
-    if (!newEpisode.title || !newEpisode.thumbnail || !newEpisode.videoUrl) {
+    if (!newEpisode.title || (!newEpisode.thumbnail && !thumbnailPreview) || !newEpisode.videoUrl) {
       toast.error("Please fill all episode fields");
       return;
     }
@@ -502,7 +541,7 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
       id: `${anime?.id || "new"}-${newEpisode.number}`,
       title: newEpisode.title || "",
       number: newEpisode.number || episodes.length + 1,
-      thumbnail: newEpisode.thumbnail || "",
+      thumbnail: thumbnailPreview || newEpisode.thumbnail || "",
       duration: newEpisode.duration || 24,
       videoUrl: newEpisode.videoUrl || "",
       releaseDate: newEpisode.releaseDate || new Date().toISOString()
@@ -517,6 +556,7 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
       videoUrl: "",
       releaseDate: new Date().toISOString().split('T')[0]
     });
+    setThumbnailPreview("");
   };
 
   const removeEpisode = (index: number) => {
@@ -535,7 +575,7 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
   };
 
   return (
-    <Form {...form}>
+    <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -553,36 +593,143 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
               )}
             />
           </div>
+
           <div>
             <FormField
               control={form.control}
               name="coverImage"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Cover Image URL</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
+                  <FormLabel>Cover Image</FormLabel>
+                  <div className="space-y-2">
+                    {coverImagePreview && (
+                      <div className="relative w-40 h-40 overflow-hidden rounded-md mb-2">
+                        <img 
+                          src={coverImagePreview} 
+                          alt="Cover preview" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        className="flex items-center gap-2"
+                        onClick={() => coverImageRef.current?.click()}
+                        disabled={uploadingCover}
+                      >
+                        {uploadingCover ? (
+                          <span className="animate-pulse">Uploading...</span>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4" />
+                            Upload Image
+                          </>
+                        )}
+                      </Button>
+                      <input 
+                        type="file"
+                        ref={coverImageRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) {
+                            handleFileUpload(
+                              e.target.files[0], 
+                              setCoverImagePreview, 
+                              setUploadingCover,
+                              (url) => form.setValue("coverImage", url)
+                            );
+                          }
+                        }}
+                      />
+                      <div className="relative flex-1">
+                        <Input 
+                          {...field} 
+                          placeholder="Or enter image URL"
+                          onChange={(e) => {
+                            field.onChange(e);
+                            setCoverImagePreview(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
+
           <div>
             <FormField
               control={form.control}
               name="bannerImage"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Banner Image URL (Optional)</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
+                  <FormLabel>Banner Image (Optional)</FormLabel>
+                  <div className="space-y-2">
+                    {bannerImagePreview && (
+                      <div className="relative w-full h-28 overflow-hidden rounded-md mb-2">
+                        <img 
+                          src={bannerImagePreview} 
+                          alt="Banner preview" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        className="flex items-center gap-2"
+                        onClick={() => bannerImageRef.current?.click()}
+                        disabled={uploadingBanner}
+                      >
+                        {uploadingBanner ? (
+                          <span className="animate-pulse">Uploading...</span>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4" />
+                            Upload Image
+                          </>
+                        )}
+                      </Button>
+                      <input 
+                        type="file"
+                        ref={bannerImageRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) {
+                            handleFileUpload(
+                              e.target.files[0], 
+                              setBannerImagePreview, 
+                              setUploadingBanner,
+                              (url) => form.setValue("bannerImage", url)
+                            );
+                          }
+                        }}
+                      />
+                      <div className="relative flex-1">
+                        <Input 
+                          {...field} 
+                          placeholder="Or enter image URL"
+                          onChange={(e) => {
+                            field.onChange(e);
+                            setBannerImagePreview(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
+
           <div>
             <FormField
               control={form.control}
@@ -800,42 +947,53 @@ const AnimeForm: React.FC<AnimeFormProps> = ({ anime, onSubmit }) => {
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="text-sm font-medium">Thumbnail URL</label>
-                  <Input 
-                    value={newEpisode.thumbnail} 
-                    onChange={(e) => setNewEpisode({...newEpisode, thumbnail: e.target.value})}
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="text-sm font-medium">Video URL</label>
-                  <Input 
-                    value={newEpisode.videoUrl} 
-                    onChange={(e) => setNewEpisode({...newEpisode, videoUrl: e.target.value})}
-                  />
-                </div>
-              </div>
-              
-              <Button 
-                type="button" 
-                onClick={addEpisode} 
-                variant="outline"
-                className="w-full"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Episode
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <DialogFooter>
-          <Button type="submit" className="bg-orange-600 hover:bg-orange-700">
-            {anime ? 'Update Anime' : 'Add Anime'}
-          </Button>
-        </DialogFooter>
-      </form>
-    </Form>
-  );
-};
-
-export default DevPortal;
+                  <label className="text-sm font-medium">Thumbnail</label>
+                  <div className="space-y-2">
+                    {thumbnailPreview && (
+                      <div className="relative w-40 h-24 overflow-hidden rounded-md mb-2">
+                        <img 
+                          src={thumbnailPreview} 
+                          alt="Thumbnail preview" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        className="flex items-center gap-2"
+                        onClick={() => episodeThumbnailRef.current?.click()}
+                        disabled={uploadingThumbnail}
+                      >
+                        {uploadingThumbnail ? (
+                          <span className="animate-pulse">Uploading...</span>
+                        ) : (
+                          <>
+                            <Image className="h-4 w-4" />
+                            Upload Thumbnail
+                          </>
+                        )}
+                      </Button>
+                      <input 
+                        type="file"
+                        ref={episodeThumbnailRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) {
+                            handleFileUpload(
+                              e.target.files[0], 
+                              setThumbnailPreview, 
+                              setUploadingThumbnail,
+                              (url) => setNewEpisode({...newEpisode, thumbnail: url})
+                            );
+                          }
+                        }}
+                      />
+                      <div className="relative flex-1">
+                        <Input 
+                          value={newEpisode.thumbnail} 
+                          placeholder="Or enter thumbnail URL"
+                          onChange={(e) => {
+                            setNewEpisode({...newEpisode, thumbnail: e.target
